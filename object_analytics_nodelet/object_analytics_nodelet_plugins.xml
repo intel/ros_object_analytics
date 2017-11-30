@@ -1,0 +1,57 @@
+<!--
+Copyright (c) 2017 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<library
+  path="lib/libobject_analytics_nodelet">
+
+  <class
+    name="object_analytics_nodelet/splitter/SplitterNodelet"
+    type="object_analytics_nodelet::splitter::SplitterNodelet"
+    base_class_type="nodelet::Nodelet">
+    <description>
+      Splits point cloud data from RGBD sensor into color(rgb) and depth(pointcloud) two messages
+       and republish.
+    </description>
+  </class>
+
+  <class
+    name="object_analytics_nodelet/segmenter/SegmenterNodelet"
+    type="object_analytics_nodelet::segmenter::SegmenterNodelet"
+    base_class_type="nodelet::Nodelet">
+    <description>
+      Segment point cloud into individual objects based on euclid space distance and publish
+       segmentation result.
+    </description>
+  </class>
+
+  <class
+    name="object_analytics_nodelet/merger/MergerNodelet"
+    type="object_analytics_nodelet::merger::MergerNodelet"
+    base_class_type="nodelet::Nodelet">
+    <description>
+      Merge 2d and 3d analytics results into one and publish out.
+    </description>
+  </class>
+
+  <class
+    name="object_analytics_nodelet/tracker/TrackingNodelet"
+    type="object_analytics_nodelet::tracker::TrackingNodelet"
+    base_class_type="nodelet::Nodelet">
+    <description>
+      Track detected objects, and publish out a unique ID for each tracked object.
+    </description>
+  </class>
+
+</library>

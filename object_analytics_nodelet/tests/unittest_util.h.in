@@ -1,0 +1,64 @@
+/*
+ * Copyright (c) 2017 Intel Corporation
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+#ifndef TESTS_UNITTEST_UTIL_H
+#define TESTS_UNITTEST_UTIL_H
+
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <gtest/gtest.h>
+#include <pcl/io/pcd_io.h>
+
+#include "object_analytics_nodelet/model/object_utils.h"
+
+using geometry_msgs::Point32;
+using sensor_msgs::RegionOfInterest;
+using object_msgs::Object;
+using object_msgs::ObjectInBox;
+using object_msgs::ObjectsInBoxes;
+using object_analytics_msgs::ObjectInBox3D;
+using object_analytics_msgs::ObjectsInBoxes3D;
+using object_analytics_nodelet::model::PointT;
+using object_analytics_nodelet::model::PointCloudT;
+using object_analytics_nodelet::model::Object2D;
+using object_analytics_nodelet::model::Object3D;
+using object_analytics_nodelet::model::ObjectUtils;
+
+#define RESOURCE_DIR "@RESOURCE_DIR@"
+
+void readPointCloudFromPCD(const std::string& name, PointCloudT::Ptr& pointcloud);
+
+Object getObject(const std::string name, const float probability);
+RegionOfInterest getRoi(int x_offset, int y_offset, int width, int height);
+ObjectInBox getObjectInBox(int x_offset, int y_offset, int width, int height, const std::string& name,
+                           const float probability);
+ObjectInBox3D getObjectInBox3D(int x_offset, int y_offset, int width, int height, int min_x, int min_y, int min_z,
+                               int max_x, int max_y, int max_z);
+
+Point32 getPoint32(float x, float y, float z);
+PointT getPointT(float x, float y, float z);
+
+bool operator==(const RegionOfInterest& left, const RegionOfInterest& right);
+bool operator==(const ObjectInBox& left, const Object2D& right);
+bool operator==(const Point32& left, const Point32& right);
+bool operator==(const ObjectInBox3D& left, const Object3D& right);
+bool operator==(const Object2D& left, const Object2D& right);
+bool operator==(const Object3D& left, const Object3D& right);
+bool operator==(const PointT& left, const PointT& right);
+
+#endif  // TESTS_UNITTEST_UTIL_H

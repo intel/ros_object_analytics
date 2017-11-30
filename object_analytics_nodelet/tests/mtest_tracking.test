@@ -1,0 +1,45 @@
+<!--
+Copyright (c) 2017 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+<launch>
+  <arg name="camera"                     default="1" />
+  <arg name="input_points"               default="/camera/depth_registered/points" />
+  <arg name="input_detection"            default="detection" />
+
+  <!--Camera Realsense: 1-->
+  <group if="$(eval camera is 1)">
+    <include file="$(find realsense_ros_camera)/launch/rs_camera.launch">
+      <arg name="enable_pointcloud" value="true" />
+      <arg name="enable_sync"       value="true" />
+      <arg name="enable_infra1"     value="false" />
+      <arg name="enable_infra2"     value="false" />
+      <arg name="enable_fisheye"    value="false" />
+      <arg name="enable_imu"        value="false" />
+    </include>
+  </group>
+
+  <!--Camera Astra: 2-->
+  <group if="$(eval camera is 2)">
+    <include file="$(find astra_launch)/launch/astra.launch" />
+  </group>
+
+  <include file="$(find object_analytics_launch)/launch/analytics.launch">
+    <arg name="input_points" value="$(arg input_points)" />
+    <arg name="input_detection" value="$(arg input_detection)" />
+  </include>
+
+  <test pkg="object_analytics_nodelet" type="mtest_tracking" test-name="tracking_test" time-limit="3600"/>
+</launch>

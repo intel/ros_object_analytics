@@ -1,0 +1,17 @@
+/**
+@mainpage
+
+@htmlinclude manifest.html
+
+This package implements 2d object racking and 3d object localization.
+
+@section codeapi Code API
+
+This package consists of below modules
+1. object_analytics_nodelet::splitter
+2. object_analytics_nodelet::segmenter
+3. object_analytics_nodelet::tracker
+4. object_analytics_nodelet::merger
+5. object_analytics_nodelet::model
+
+**/

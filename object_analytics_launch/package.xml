@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!--
+Copyright (c) 2017 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<package>
+  <name>object_analytics_launch</name>
+  <version>0.3.0</version>
+  <description>The object_analytics_launch package</description>
+  <maintainer email="peter.han@intel.com">Peter Han</maintainer>
+  <author email="peter.han@intel.com">Peter Han</author>
+  <author email="sharron.liu@intel.com">Sharron Liu</author>
+  <license>Apache 2.0</license>
+
+  <url type="repository">https://github.com/intel/ros_object_analytics</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>nodelet</build_depend>
+  <build_depend>roslaunch</build_depend>
+  <build_depend>object_analytics_nodelet</build_depend>
+  <build_depend>object_detect_launch</build_depend>
+
+  <run_depend>nodelet</run_depend>
+  <run_depend>roslaunch</run_depend>
+  <run_depend>object_analytics_nodelet</run_depend>
+  <run_depend>object_detect_launch</run_depend>
+</package>

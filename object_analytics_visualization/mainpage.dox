@@ -1,0 +1,14 @@
+/**
+@mainpage
+
+@htmlinclude manifest.html
+
+This package publishes messages to show object analytics result on RViz
+
+@section codeapi Code API
+
+This package consists of below files
+1. marker_publisher.py
+2. image_publisher.py
+
+**/

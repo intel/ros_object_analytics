@@ -15,6 +15,7 @@
  */
 
 #include <string>
+#include <ros/assert.h>
 #include <cv_bridge/cv_bridge.h>
 #include "object_analytics_nodelet/tracker/tracking.h"
 
@@ -25,11 +26,9 @@ namespace tracker
 const int32_t Tracking::kAgeingThreshold = 16;
 
 Tracking::Tracking(int32_t tracking_id, const std::string& name, const cv::Rect2d& rect)
+  : rect_(rect), obj_name_(name), tracking_id_(tracking_id), detected_(false)
 {
-  tracking_id_ = tracking_id;
-  obj_name_ = name;
-  rect_ = rect;
-  detected_ = false;
+  ROS_ASSERT(tracking_id >= 0);
 }
 
 Tracking::~Tracking()

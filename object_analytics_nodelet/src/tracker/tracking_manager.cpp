@@ -32,7 +32,7 @@ namespace tracker
 const float TrackingManager::kMatchThreshold = 0.2;
 const float TrackingManager::kProbabilityThreshold = 0.5;
 int32_t TrackingManager::tracking_cnt = 0;
-const int32_t TrackingManager::kNumOfThread = 6;
+const int32_t TrackingManager::kNumOfThread = 4;
 
 TrackingManager::TrackingManager()
 {
@@ -47,7 +47,7 @@ void TrackingManager::track(const cv::Mat& mat)
   uint32_t i;
 
   ROS_DEBUG("****tracked objects: %zu", trackings_.size());
-  /* get all tracking ROIs updated with new frame*/
+/* get all tracking ROIs updated with new frame*/
 #pragma omp parallel for num_threads(kNumOfThread)
   for (i = 0; i < trackings_.size(); i++)
   {
@@ -67,7 +67,7 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
     t->clearDetected();
   }
   ROS_DEBUG("****detected objects: %zu", objs->objects_vector.size());
-  /* rectify tracking ROIs with detected ROIs*/
+/* rectify tracking ROIs with detected ROIs*/
 #pragma omp parallel for num_threads(kNumOfThread)
   for (i = 0; i < objs->objects_vector.size(); i++)
   {

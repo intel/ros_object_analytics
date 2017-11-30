@@ -29,14 +29,8 @@ using SubscribeImg = message_filters::Subscriber<sensor_msgs::Image>;
 using SubscribeTracks = message_filters::Subscriber<object_analytics_msgs::TrackedObjects>;
 using SyncTracking = message_filters::TimeSynchronizer<sensor_msgs::Image, object_analytics_msgs::TrackedObjects>;
 
-// todo: passing from argv
-static const std::string kTopicRgb = "/object_analytics/rgb";
-static const std::string kTopicDetection = "/object_analytics/detection";
-static const std::string kTopicTracking = "/object_analytics/tracking";
 static const std::string kCvWindowName = "Object Analytics View";
-
 static bool received_tracks;
-static ros::Subscriber sub_obj;
 static object_msgs::ObjectsInBoxesConstPtr dobjs;
 static ros::Duration dlatency;
 static int32_t dfps;
@@ -51,7 +45,6 @@ static void tracking_cb(const sensor_msgs::ImageConstPtr& rgb,
   static uint64_t tracking_count = 0;
   char buf[256];
   cv::Mat mat = cv_bridge::toCvCopy(rgb, "bgr8")->image;
-
   if (!tracking_count)
   {
     tracking_stamp = ros::Time::now();
@@ -67,7 +60,6 @@ static void tracking_cb(const sensor_msgs::ImageConstPtr& rgb,
     cv::putText(mat, buf, cv::Point(0, 24), cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 0, 0));
   }
   tracking_count++;
-
   for (auto t : tracks->tracked_objects)
   {
     sensor_msgs::RegionOfInterest troi = t.roi;
@@ -77,16 +69,19 @@ static void tracking_cb(const sensor_msgs::ImageConstPtr& rgb,
     snprintf(buf, sizeof(buf), "ID [%d]", t.id);
     cv::putText(mat, buf, cv::Point(r.x, r.y + 32), cv::FONT_HERSHEY_SIMPLEX, 1.0, green);
   }
-  for (auto d : dobjs->objects_vector)
+  if (dobjs)
   {
-    object_msgs::Object dobj = d.object;
-    sensor_msgs::RegionOfInterest droi = d.roi;
-    cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
-    std::string n = std::string(dobj.object_name.data());
-    cv::Scalar red = cv::Scalar(0, 0, 255);
-    cv::rectangle(mat, r, red);
-    snprintf(buf, sizeof(buf), "%s [%.0f%%]", n.c_str(), dobj.probability * 100);
-    cv::putText(mat, buf, cv::Point(r.x, r.y + 48), cv::FONT_HERSHEY_PLAIN, 1.0, red);
+    for (auto d : dobjs->objects_vector)
+    {
+      object_msgs::Object dobj = d.object;
+      sensor_msgs::RegionOfInterest droi = d.roi;
+      cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
+      std::string n = std::string(dobj.object_name.data());
+      cv::Scalar red = cv::Scalar(0, 0, 255);
+      cv::rectangle(mat, r, red);
+      snprintf(buf, sizeof(buf), "%s [%.0f%%]", n.c_str(), dobj.probability * 100);
+      cv::putText(mat, buf, cv::Point(r.x, r.y + 48), cv::FONT_HERSHEY_PLAIN, 1.0, red);
+    }
   }
   imshow(kCvWindowName, mat);
   cv::waitKey(1);
@@ -135,11 +130,11 @@ int main(int argc, char** argv)
 
   ros::init(argc, argv, "mtest_tracking");
   ros::NodeHandle nh;
-  SubscribeImg sub_rgb(nh, kTopicRgb, 10);
-  SubscribeTracks sub_track(nh, kTopicTracking, 10);
-  SyncTracking sync_track(sub_rgb, sub_track, 10);
-  sync_track.registerCallback(tracking_cb);
-  sub_obj = nh.subscribe(kTopicDetection, 1, detection_cb);
+  SubscribeImg sub_rgb(nh, "/object_analytics/rgb", 30);
+  SubscribeTracks sub_track(nh, "/object_analytics/tracking", 30);
 
+  SyncTracking sync_track(sub_rgb, sub_track, 30);
+  sync_track.registerCallback(tracking_cb);
+  ros::Subscriber sub_obj = nh.subscribe("/object_analytics/detection", 10, detection_cb);
   return RUN_ALL_TESTS();
 }

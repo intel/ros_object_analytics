@@ -85,8 +85,7 @@ ROS wrapper for realtime object detection, localization and tracking
 ## visualize tracking and localization results on RViz
   Steps to enable visualization on RViz are as following
   ```bash
-  rosrun rviz rviz -d <path/to/object_analytics_visualization.rviz>
-  roslaunch object_analytics_visualization viz_all.launch
+  roslaunch object_analytics_visualization rviz.launch
   ```
 
 ###### *Any security issue should be reported using process at https://01.org/security*

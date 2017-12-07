@@ -41,4 +41,5 @@ limitations under the License.
   <run_depend>cv_bridge</run_depend>
   <run_depend>opencv2</run_depend>
   <run_depend>roslaunch</run_depend>
+  <run_depend>rviz</run_depend>
 </package>

@@ -31,9 +31,11 @@ using SyncTracking = message_filters::TimeSynchronizer<sensor_msgs::Image, objec
 
 static const std::string kCvWindowName = "Object Analytics View";
 static bool received_tracks;
-static object_msgs::ObjectsInBoxesConstPtr dobjs;
+#ifdef MTEST_TRACKING_ENABLE_VIEW
+static object_msgs::ObjectsInBoxesConstPtr dobjs = nullptr;
 static ros::Duration dlatency;
 static int32_t dfps;
+#endif
 
 static void tracking_cb(const sensor_msgs::ImageConstPtr& rgb,
                         const object_analytics_msgs::TrackedObjectsConstPtr& tracks)
@@ -126,7 +128,6 @@ int main(int argc, char** argv)
 {
   testing::InitGoogleTest(&argc, argv);
   received_tracks = false;
-  dobjs = nullptr;
 
   ros::init(argc, argv, "mtest_tracking");
   ros::NodeHandle nh;

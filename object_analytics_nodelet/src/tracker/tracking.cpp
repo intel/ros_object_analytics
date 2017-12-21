@@ -16,7 +16,6 @@
 
 #include <string>
 #include <ros/assert.h>
-#include <cv_bridge/cv_bridge.h>
 #include "object_analytics_nodelet/tracker/tracking.h"
 
 namespace object_analytics_nodelet
@@ -45,7 +44,11 @@ void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
   {
     tracker_.release();
   }
-  tracker_ = cv::Tracker::create("MIL");
+  #if CV_VERSION_MINOR == 2
+    tracker_ = cv::Tracker::create("MIL");
+  #else
+    tracker_ = cv::TrackerMIL::create();
+  #endif
   tracker_->init(mat, rect);
   rect_ = rect;
 }

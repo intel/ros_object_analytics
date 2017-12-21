@@ -48,6 +48,8 @@ find_package(PCL 1.7 REQUIRED COMPONENTS
   filters
 )
 
+find_package(OpenCV 3.2 REQUIRED)
+
 # generate dynamic reconfigure
 generate_dynamic_reconfigure_options(
   cfg/SegmentationAlgorithms.cfg

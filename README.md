@@ -13,14 +13,14 @@ ROS wrapper for realtime object detection, localization and tracking
   * cv_bridge
   * libpcl-all
   * libpcl-all-dev
+  * ros-kinetic-opencv3
 
   Other ROS packages
   * [object_msgs](https://github.com/intel/object_msgs)
   * [opencl_caffe](https://github.com/intel/ros_opencl_caffe)
   * [object_detect_launch](https://github.com/intel/ros_object_detect_launch)
 
-  OpenCV
-  * [opencv](https://github.com/opencv/opencv) tag 3.2.0
+  NOTE: In older version of "ros-kinetic-opencv3" where OpenCV 3.2.0 was used, self-built opencv_tracking is needed. While this's no more necessary since OpenCV 3.3 integrated. Check the OpenCV version from "/opt/ros/kinetic/share/opencv3/package.xml"
   * [opencv_tracking](https://github.com/opencv/opencv_contrib) tag 3.2.0
 
 ## build and test
@@ -41,7 +41,7 @@ ROS wrapper for realtime object detection, localization and tracking
 
 ## extra running dependencies
   RGB-D camera
-  * [librealsense2](https://github.com/IntelRealSense/librealsense/tree/master) and [realsense_ros_camera](https://github.com/intel-ros/realsense/tree/2.0.1) if run with Intel RealSense D400
+  * [librealsense2 tag v2.8.1](https://github.com/IntelRealSense/librealsense/tree/v2.8.1) and [realsense_ros_camera tag 2.0.1](https://github.com/intel-ros/realsense/tree/2.0.1) if run with Intel RealSense D400
   ```
   roslaunch realsense_ros_camera rs_camera.launch enable_pointcloud:=true enable_sync:=true enable_infra1:=false enable_infra2:=false
   ```

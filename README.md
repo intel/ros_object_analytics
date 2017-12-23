@@ -60,6 +60,11 @@ ROS wrapper for realtime object detection, localization and tracking
   roslaunch object_analytics_launch analytics.launch input_points:=/camera/points
   ```
 
+  There are two choices for 2d detection, one is [clCaffe](https://github.com/intel/ros_opencl_caffe) another is [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs), Movidius NCS is the default, and can switch to clCaffe by appending 'detect_impl:=opencl_caffe' ros argument, like below:
+  ```bash
+  roslaunch object_analytics_launch analytics.launch detect_impl:=opencl_caffe
+  ```
+
 ## published topics
   ```bash
   object_analytics/localization (object_analytics_msgs::ObjectsInBoxes3D)

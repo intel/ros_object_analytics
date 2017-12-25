@@ -163,7 +163,7 @@ class SynchronizedSubscriber(object):
         ts = message_filters.TimeSynchronizer([image_sub, detection_sub, tracking_sub], 100)
         ts.registerCallback(self._callback)
 
-        self._measures = [Measure('Segmentation', '/object_analytics/segmentation', ObjectsInBoxes3D),
+        self._measures = [Measure('Detection', '/object_analytics/detection', ObjectsInBoxes),
                           Measure('Localization', '/object_analytics/localization', ObjectsInBoxes3D),
                           Measure('Tracking', '/object_analytics/tracking', TrackedObjects)]
 

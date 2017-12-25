@@ -47,7 +47,7 @@ void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
   #if CV_VERSION_MINOR == 2
     tracker_ = cv::Tracker::create("MIL");
   #else
-    tracker_ = cv::TrackerMIL::create();
+    tracker_ = cv::TrackerKCF::create();
   #endif
   tracker_->init(mat, rect);
   rect_ = rect;

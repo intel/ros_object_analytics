@@ -48,7 +48,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   RGB-D camera
   * [librealsense2 tag v2.8.1](https://github.com/IntelRealSense/librealsense/tree/v2.8.1) and [realsense_ros_camera tag 2.0.1](https://github.com/intel-ros/realsense/tree/2.0.1) if run with Intel RealSense D400
   ```
-  roslaunch realsense_ros_camera rs_camera.launch enable_pointcloud:=true enable_sync:=true enable_infra1:=false enable_infra2:=false
+  roslaunch realsense_ros_camera rs_camera.launch enable_pointcloud:=true enable_sync:=true
   ```
   * [openni_launch](http://wiki.ros.org/openni_launch) or [freenect_launch](http://wiki.ros.org/freenect_launch) and their dependencies if run with Microsoft XBOX 360 Kinect
   ```bash

@@ -78,6 +78,15 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
     }
     std::string n = dobj.object_name;
     sensor_msgs::RegionOfInterest droi = objs->objects_vector[i].roi;
+    /* some trackers do not accept an ROI beyond the size of a Mat*/
+    if (droi.x_offset + droi.width > static_cast<uint32_t>(mat.cols))
+    {
+      droi.width = mat.cols - droi.x_offset;
+    }
+    if (droi.y_offset + droi.height > static_cast<uint32_t>(mat.rows))
+    {
+      droi.height = mat.rows - droi.y_offset;
+    }
     cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
     ROS_DEBUG("detected %s [%d %d %d %d] %.0f%%", n.c_str(), droi.x_offset, droi.y_offset, droi.width, droi.height,
               dobj.probability * 100);

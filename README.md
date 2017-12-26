@@ -1,5 +1,10 @@
 # ros_object_analytics
-ROS wrapper for realtime object detection, localization and tracking
+Object Analytics (OA) is ROS wrapper for realtime object detection, localization and tracking.
+These packages aim to provide real-time object analyses over RGB-D camera inputs, enabling ROS developer to easily create amazing robotics advanced features, like intelligent collision avoidance and semantic SLAM. It consumes [sensor_msgs::PointClould2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) data delivered by RGB-D camera, publishing topics on [object detection](https://github.com/intel/object_msgs), [object tracking](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs), and [object localization](https://github.com/intel/ros_object_analytics/object_analytics_msgs) in 3D camera coordination system.
+
+OA keeps integrating with various "state-of-the-art" algorithms.
+* Object detection offload to GPU, [ros_opencl_caffe](https://github.com/intel/ros_opencl_caffe), with Yolo v2 model and [OpenCL Caffe](https://github.com/01org/caffe/wiki/clCaffe#yolo2-model-support) framework
+* Object detection offload to VPU, [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs), with MobileNet SSD model and Caffe framework
 
 ## compiling dependencies
   ROS packages from [ros-kinetic-desktop-full](http://wiki.ros.org/kinetic/Installation/Ubuntu)
@@ -62,7 +67,7 @@ ROS wrapper for realtime object detection, localization and tracking
 
   There are two choices for 2d detection, one is [clCaffe](https://github.com/intel/ros_opencl_caffe) another is [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs), Movidius NCS is the default, and can switch to clCaffe by appending 'detect_impl:=opencl_caffe' ros argument, like below:
   ```bash
-  roslaunch object_analytics_launch analytics.launch detect_impl:=opencl_caffe
+  roslaunch object_analytics_launch analytics.launch detect_pkg:=opencl_caffe
   ```
 
 ## published topics

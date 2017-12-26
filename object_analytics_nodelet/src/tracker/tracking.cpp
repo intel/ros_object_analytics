@@ -25,14 +25,14 @@ namespace tracker
 const int32_t Tracking::kAgeingThreshold = 16;
 
 Tracking::Tracking(int32_t tracking_id, const std::string& name, const cv::Rect2d& rect)
-  : rect_(rect), obj_name_(name), tracking_id_(tracking_id), detected_(false)
+  : tracker_(cv::Ptr<cv::Tracker>()), rect_(rect), obj_name_(name), tracking_id_(tracking_id), detected_(false)
 {
   ROS_ASSERT(tracking_id >= 0);
 }
 
 Tracking::~Tracking()
 {
-  if (!tracker_.empty())
+  if (tracker_.get())
   {
     tracker_.release();
   }
@@ -40,15 +40,15 @@ Tracking::~Tracking()
 
 void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
 {
-  if (!tracker_.empty())
+  if (tracker_.get())
   {
     tracker_.release();
   }
-  #if CV_VERSION_MINOR == 2
-    tracker_ = cv::Tracker::create("MIL");
-  #else
-    tracker_ = cv::TrackerKCF::create();
-  #endif
+#if CV_VERSION_MINOR == 2
+  tracker_ = cv::Tracker::create("MIL");
+#else
+  tracker_ = cv::TrackerMIL::create();
+#endif
   tracker_->init(mat, rect);
   rect_ = rect;
 }

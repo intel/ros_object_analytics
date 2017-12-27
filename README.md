@@ -60,21 +60,41 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   ```
 
 ## command sample to launch object_analytics
-  Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera, default "/camera/depth_registered/points"
+  ```bash
+  roslaunch object_analytics_launch analytics.launch
+  ```
+
+  Frequently used options
+  * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera, default "/camera/depth_registered/points". For realsense it is "/camera/points".
   ```bash
   roslaunch object_analytics_launch analytics.launch input_points:=/camera/points
   ```
+  * **detect_pkg** Specify arg "detect_pkg" to choose object detection package. Default is "movidius_ncs". Supported packages are
+    - detect_pkg:=opencl_caffe, [clCaffe](https://github.com/intel/ros_opencl_caffe)
+    - detect_pkg:=movidius_ncs (default), [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs)
 
-  There are two choices for 2d detection, one is [clCaffe](https://github.com/intel/ros_opencl_caffe) another is [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs), Movidius NCS is the default, and can switch to clCaffe by appending 'detect_impl:=opencl_caffe' ros argument, like below:
+    To switch to opencl_caffe:
   ```bash
   roslaunch object_analytics_launch analytics.launch detect_pkg:=opencl_caffe
   ```
 
-## published topics
+  Additional options: supported by Movidius NCS
+  * **cnn_type** Specify arg "cnn_type" to choose [object detection model](https://github.com/intel/ros_intel_movidius_ncs#511-supported-cnn-models-1). Default is "mobilenet_ssd"
+  * **ncs_param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
   ```bash
-  object_analytics/localization (object_analytics_msgs::ObjectsInBoxes3D)
-  object_analytics/tracking (object_analytics_msgs::TrackedObjects)
+  roslaunch object_analytics_launch analytics.launch input_points:=/camera/points cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
   ```
+
+## published topics
+  object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))
+
+  object_analytics/pointcloud ([sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html))
+
+  object_analytics/localization ([object_analytics_msgs::ObjectsInBoxes3D](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
+
+  object_analytics/tracking ([object_analytics_msgs::TrackedObjects](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
+
+  object_analytics/detection ([object_msgs::ObjectsInBoxes](https://github.com/intel/object_msgs/tree/master/msg))
 ## rostest
   The roslaunch files with ".test" surfix will launch the test node and all dependents, including camera, detection nodelet, and object_analytics.
   * run tracking test without visual outputs

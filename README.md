@@ -22,7 +22,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
   Other ROS packages
   * [object_msgs](https://github.com/intel/object_msgs)
-  * [opencl_caffe](https://github.com/intel/ros_opencl_caffe)
+  * [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs) or [opencl_caffe](https://github.com/intel/ros_opencl_caffe)
   * [object_detect_launch](https://github.com/intel/ros_object_detect_launch)
 
   NOTE: In older version of "ros-kinetic-opencv3" where OpenCV 3.2.0 was used, self-built opencv_tracking is needed. While this's no more necessary since OpenCV 3.3 integrated. Check the OpenCV version from "/opt/ros/kinetic/share/opencv3/package.xml"
@@ -60,12 +60,13 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   ```
 
 ## command sample to launch object_analytics
+  Launch OA with default options
   ```bash
   roslaunch object_analytics_launch analytics.launch
   ```
 
   Frequently used options
-  * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera, default "/camera/depth_registered/points". For realsense it is "/camera/points".
+  * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points". For realsense it is "/camera/points".
   ```bash
   roslaunch object_analytics_launch analytics.launch input_points:=/camera/points
   ```
@@ -78,11 +79,11 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   roslaunch object_analytics_launch analytics.launch detect_pkg:=opencl_caffe
   ```
 
-  Additional options: supported by Movidius NCS
+  Additional options for Movidius NCS
   * **cnn_type** Specify arg "cnn_type" to choose [object detection model](https://github.com/intel/ros_intel_movidius_ncs#511-supported-cnn-models-1). Default is "mobilenet_ssd"
   * **ncs_param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
   ```bash
-  roslaunch object_analytics_launch analytics.launch input_points:=/camera/points cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
+  roslaunch object_analytics_launch analytics.launch cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
   ```
 
 ## published topics
@@ -95,6 +96,13 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   object_analytics/tracking ([object_analytics_msgs::TrackedObjects](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
 
   object_analytics/detection ([object_msgs::ObjectsInBoxes](https://github.com/intel/object_msgs/tree/master/msg))
+
+## visualize tracking and localization results on RViz
+  Steps to enable visualization on RViz are as following
+  ```bash
+  roslaunch object_analytics_visualization rviz.launch
+  ```
+
 ## rostest
   The roslaunch files with ".test" surfix will launch the test node and all dependents, including camera, detection nodelet, and object_analytics.
   * run tracking test without visual outputs
@@ -110,12 +118,6 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   rostest object_analytics_nodelet mtest_tracking.test input_points:=/camera/points
   # to launch the test with astra camera, specify arg "camera"
   rostest object_analytics_nodelet mtest_tracking.test camera:=2
-  ```
-
-## visualize tracking and localization results on RViz
-  Steps to enable visualization on RViz are as following
-  ```bash
-  roslaunch object_analytics_visualization rviz.launch
   ```
 
 ###### *Any security issue should be reported using process at https://01.org/security*

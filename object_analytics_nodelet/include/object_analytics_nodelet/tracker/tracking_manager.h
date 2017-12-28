@@ -142,6 +142,18 @@ private:
    * @return Pointer to the tracking matched. An empty pointer if none tracking matched.
    */
   std::shared_ptr<Tracking> getTracking(const std::string& obj_name, const cv::Rect2d& roi);
+
+  /**
+   * @brief Validate the ROI against the size of an image array.
+   *
+   * In Debug build, ROS_ASSERT failure will be raised in case unexpected ROI detected.
+   * In Release build, false shall be returned in case unexpected ROI detected.
+   *
+   * @param[in] mat Input image arrary
+   * @param[in] droi ROI
+   * @return true if ROI valid, otherwise false.
+   */
+  bool validateROI(const cv::Mat& mat, const sensor_msgs::RegionOfInterest& droi);
 };
 }  // namespace tracker
 }  // namespace object_analytics_nodelet

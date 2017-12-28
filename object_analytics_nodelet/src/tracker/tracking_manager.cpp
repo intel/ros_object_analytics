@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 #include <omp.h>
+#include <ros/assert.h>
 #include <cv_bridge/cv_bridge.h>
 #include "object_analytics_nodelet/model/object_utils.h"
 #include "object_analytics_nodelet/tracker/tracking_manager.h"
@@ -79,13 +80,18 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
     std::string n = dobj.object_name;
     sensor_msgs::RegionOfInterest droi = objs->objects_vector[i].roi;
     /* some trackers do not accept an ROI beyond the size of a Mat*/
-    if (droi.x_offset + droi.width > static_cast<uint32_t>(mat.cols))
+    if (!validateROI(mat, droi))
     {
-      droi.width = mat.cols - droi.x_offset;
-    }
-    if (droi.y_offset + droi.height > static_cast<uint32_t>(mat.rows))
-    {
-      droi.height = mat.rows - droi.y_offset;
+      ROS_WARN("unexptected ROI [%d %d %d %d] against mat size [%d %d]", droi.x_offset, droi.y_offset, droi.width,
+               droi.height, mat.cols, mat.rows);
+      droi.x_offset = droi.x_offset < 0 ? 0 : droi.x_offset;
+      droi.x_offset = droi.x_offset >= static_cast<uint32_t>(mat.cols) ? (mat.cols - 1) : droi.x_offset;
+      droi.y_offset = droi.y_offset < 0 ? 0 : droi.y_offset;
+      droi.y_offset = droi.y_offset >= static_cast<uint32_t>(mat.rows) ? (mat.rows - 1) : droi.y_offset;
+      droi.width =
+          droi.x_offset + droi.width > static_cast<uint32_t>(mat.cols) ? (mat.cols - droi.x_offset) : droi.width;
+      droi.height =
+          droi.y_offset + droi.height > static_cast<uint32_t>(mat.rows) ? (mat.rows - droi.y_offset) : droi.height;
     }
     cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
     ROS_DEBUG("detected %s [%d %d %d %d] %.0f%%", n.c_str(), droi.x_offset, droi.y_offset, droi.width, droi.height,
@@ -198,6 +204,18 @@ std::shared_ptr<Tracking> TrackingManager::getTracking(const std::string& obj_na
   {
     return std::shared_ptr<Tracking>();
   }
+}
+
+bool TrackingManager::validateROI(const cv::Mat& mat, const sensor_msgs::RegionOfInterest& droi)
+{
+  ROS_ASSERT(droi.x_offset >= 0 && droi.x_offset < static_cast<uint32_t>(mat.cols));
+  ROS_ASSERT(droi.x_offset + droi.width <= static_cast<uint32_t>(mat.cols));
+  ROS_ASSERT(droi.y_offset >= 0 && droi.y_offset < static_cast<uint32_t>(mat.rows));
+  ROS_ASSERT(droi.y_offset + droi.height <= static_cast<uint32_t>(mat.rows));
+  return (droi.x_offset >= 0 && droi.x_offset < static_cast<uint32_t>(mat.cols) && droi.y_offset >= 0 &&
+          droi.y_offset < static_cast<uint32_t>(mat.rows) &&
+          (droi.x_offset + droi.width) <= static_cast<uint32_t>(mat.cols) &&
+          (droi.y_offset + droi.height) <= static_cast<uint32_t>(mat.rows));
 }
 
 }  // namespace tracker

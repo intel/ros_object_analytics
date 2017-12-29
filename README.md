@@ -81,9 +81,9 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
   Additional options for Movidius NCS
   * **cnn_type** Specify arg "cnn_type" to choose [object detection model](https://github.com/intel/ros_intel_movidius_ncs#511-supported-cnn-models-1). Default is "mobilenet_ssd"
-  * **ncs_param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
+  * **param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
   ```bash
-  roslaunch object_analytics_launch analytics.launch cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
+  roslaunch object_analytics_launch analytics.launch cnn_type:=tinyyolo_v1 param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
   ```
 
 ## published topics

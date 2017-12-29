@@ -35,7 +35,8 @@ limitations under the License.
             doc="2d detection implementation, value could be movidius_ncs, opencl_caffe" />
 
   <!-- parameters for clCaffe wrapper -->
-  <arg name="clcaffe_param_file"            default="$(find opencl_caffe_launch)/launch/includes/default.yaml"
+  <arg if="$(eval detect_pkg == 'opencl_caffe' or detect_pkg == 'opencl_caffe_launch')"
+            name="param_file" default="$(find opencl_caffe_launch)/launch/includes/default.yaml"
             doc="full path name to param yaml file" />
 
   <!-- parameters for Intel Movidius NCS wrapper -->
@@ -43,7 +44,8 @@ limitations under the License.
   <arg name="log_level"                     default="0" />
   <arg name="cnn_type"                      default="mobilenetssd" />
   <arg name="top_n"                         default="3" />
-  <arg name="ncs_param_file"                default="$(find movidius_ncs_launch)/config/mobilenetssd.yaml"
+  <arg if="$(eval detect_pkg == 'movidius_ncs' or detect_pkg == 'movidius_ncs_launch')"
+            name="param_file" default="$(find movidius_ncs_launch)/config/mobilenetssd.yaml"
             doc="full path name to param yaml file" />
 
   <group ns="$(arg namespace)">
@@ -74,8 +76,7 @@ limitations under the License.
           <arg name="log_level"                 value="$(arg log_level)" />
           <arg name="cnn_type"                  value="$(arg cnn_type)" />
           <arg name="top_n"                     value="$(arg top_n)" />
-          <arg name="clcaffe_param_file"        value="$(arg clcaffe_param_file)" />
-          <arg name="ncs_param_file"            value="$(arg ncs_param_file)" />
+          <arg name="param_file"                value="$(arg param_file)" />
       </include>
 
       <include file="$(find object_analytics_launch)/launch/includes/merger.launch">

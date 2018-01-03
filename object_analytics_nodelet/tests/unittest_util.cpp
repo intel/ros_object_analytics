@@ -49,7 +49,6 @@ void readPointCloudFromPCD(const std::string& name, PointCloudT::Ptr& pointcloud
 Object getObject(const std::string name, const float probability)
 {
   Object obj;
-  obj.label = 1;
   obj.object_name = name;
   obj.probability = probability;
   return obj;

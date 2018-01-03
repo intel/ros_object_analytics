@@ -30,10 +30,10 @@ limitations under the License.
   <build_depend>nodelet</build_depend>
   <build_depend>roslaunch</build_depend>
   <build_depend>object_analytics_nodelet</build_depend>
-  <build_depend>object_detect_launch</build_depend>
 
   <run_depend>nodelet</run_depend>
   <run_depend>roslaunch</run_depend>
   <run_depend>object_analytics_nodelet</run_depend>
-  <run_depend>object_detect_launch</run_depend>
+  <run_depend>opencl_caffe_launch</run_depend>
+  <run_depend>movidius_ncs_launch</run_depend>
 </package>

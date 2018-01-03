@@ -1,4 +1,4 @@
-# ros_object_analytics
+_object_analytics
 Object Analytics (OA) is ROS wrapper for realtime object detection, localization and tracking.
 These packages aim to provide real-time object analyses over RGB-D camera inputs, enabling ROS developer to easily create amazing robotics advanced features, like intelligent collision avoidance and semantic SLAM. It consumes [sensor_msgs::PointClould2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) data delivered by RGB-D camera, publishing topics on [object detection](https://github.com/intel/object_msgs), [object tracking](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs), and [object localization](https://github.com/intel/ros_object_analytics/object_analytics_msgs) in 3D camera coordination system.
 
@@ -23,7 +23,6 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   Other ROS packages
   * [object_msgs](https://github.com/intel/object_msgs)
   * [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs) or [opencl_caffe](https://github.com/intel/ros_opencl_caffe)
-  * [object_detect_launch](https://github.com/intel/ros_object_detect_launch)
 
   NOTE: In older version of "ros-kinetic-opencv3" where OpenCV 3.2.0 was used, self-built opencv_tracking is needed. While this's no more necessary since OpenCV 3.3 integrated. Check the OpenCV version from "/opt/ros/kinetic/share/opencv3/package.xml"
   * [opencv_tracking](https://github.com/opencv/opencv_contrib) tag 3.2.0
@@ -59,32 +58,31 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   roslaunch astra_launch astra.launch
   ```
 
-## command sample to launch object_analytics
-  Launch OA with default options
-  ```bash
-  roslaunch object_analytics_launch analytics.launch
-  ```
+## command to launch object_analytics
+* launch with OpenCL caffe as detection backend
+   ```bash
+   roslaunch object_analytics_launch analytics_opencl_caffe.launch
+   ```
+* launch with Movidius NCS as detection backend
+   ```bash
+   roslaunch object_analytics_launch analytics_opencl_caffe.launch
+   ```
 
   Frequently used options
   * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points". For realsense it is "/camera/points".
   ```bash
-  roslaunch object_analytics_launch analytics.launch input_points:=/camera/points
-  ```
-  * **detect_pkg** Specify arg "detect_pkg" to choose object detection package. Default is "movidius_ncs". Supported packages are
-    - detect_pkg:=opencl_caffe, [clCaffe](https://github.com/intel/ros_opencl_caffe)
-    - detect_pkg:=movidius_ncs (default), [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs)
-
-    To switch to opencl_caffe:
-  ```bash
-  roslaunch object_analytics_launch analytics.launch detect_pkg:=opencl_caffe
+  roslaunch object_analytics_launch analytics_movidius_ncs.launch input_points:=/camera/points
   ```
 
-  Additional options for Movidius NCS
-  * **cnn_type** Specify arg "cnn_type" to choose [object detection model](https://github.com/intel/ros_intel_movidius_ncs#511-supported-cnn-models-1). Default is "mobilenet_ssd"
-  * **ncs_param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
-  ```bash
-  roslaunch object_analytics_launch analytics.launch cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
-  ```
+## KPI with differnt detection backends
+| backend | | OpenCL Caffe | |  |Movidius NCS | |
+| :--- | :---: | :---: | :---: | :---: | :---: |:---: | :---: |
+| topic| localization | tracking | detection | localization | tracking | detection |
+| fps | 6.63 | 12.15 | 8.88 | 7.44 | 13.85 | 10.5 |
+| latency <sup>(sec)</sup> | 0.23 | 0.33 | 0.17 | 0.21 | 0.24 | 0.15 |
+
+* CNN model of Movidius NCS is MobileNet
+* Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel RealSense R45
 
 ## published topics
   object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))

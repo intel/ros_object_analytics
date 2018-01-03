@@ -24,7 +24,6 @@ catkin_package(
   CATKIN_DEPENDS
   roslaunch
   object_analytics_nodelet
-  object_detect_launch
 )
 
 # installation

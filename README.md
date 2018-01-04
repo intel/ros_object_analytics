@@ -8,7 +8,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
 ## compiling dependencies
   ROS packages from [ros-kinetic-desktop-full](http://wiki.ros.org/kinetic/Installation/Ubuntu)
-  * roscpp
+ * roscpp
   * nodelet
   * std_msgs
   * sensor_msgs
@@ -121,7 +121,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 </table>
 
 * CNN model of Movidius NCS is MobileNet
-* Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel RealSense R45
+* Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel(R) RealSense R45
 
 ## published topics
   object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))

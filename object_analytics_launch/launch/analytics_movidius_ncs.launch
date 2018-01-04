@@ -64,7 +64,7 @@ limitations under the License.
           <arg name="output"                    value="$(arg output_tracking)" />
       </include>
 
-      <include file="$(find movidius_ncs_launch)/launch/includes/ncs_stream_detect.launch">
+      <include file="$(find movidius_ncs_launch)/launch/includes/ncs_stream_detection.launch">
           <arg name="manager"                   value="$(arg manager)" />
           <arg name="input_topic"               value="$(arg input_rgb)" />
           <arg name="output_topic"              value="$(arg input_detection)" />

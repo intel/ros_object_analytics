@@ -4,7 +4,7 @@ These packages aim to provide real-time object analyses over RGB-D camera inputs
 
 OA keeps integrating with various "state-of-the-art" algorithms.
 * Object detection offload to GPU, [ros_opencl_caffe](https://github.com/intel/ros_opencl_caffe), with Yolo v2 model and [OpenCL Caffe](https://github.com/01org/caffe/wiki/clCaffe#yolo2-model-support) framework
-* Object detection offload to VPU, [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs), with MobileNet SSD model and Caffe framework
+* Object detection offload to VPU, [ros_intel_movidius_ncs (devel branch)](https://github.com/intel/ros_intel_movidius_ncs/tree/devel/), with MobileNet SSD model and Caffe framework
 
 ## compiling dependencies
   ROS packages from [ros-kinetic-desktop-full](http://wiki.ros.org/kinetic/Installation/Ubuntu)

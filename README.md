@@ -1,4 +1,4 @@
-_object_analytics
+# ros_object_analytics
 Object Analytics (OA) is ROS wrapper for realtime object detection, localization and tracking.
 These packages aim to provide real-time object analyses over RGB-D camera inputs, enabling ROS developer to easily create amazing robotics advanced features, like intelligent collision avoidance and semantic SLAM. It consumes [sensor_msgs::PointClould2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) data delivered by RGB-D camera, publishing topics on [object detection](https://github.com/intel/object_msgs), [object tracking](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs), and [object localization](https://github.com/intel/ros_object_analytics/object_analytics_msgs) in 3D camera coordination system.
 
@@ -74,12 +74,51 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   roslaunch object_analytics_launch analytics_movidius_ncs.launch input_points:=/camera/points
   ```
 
-## KPI with differnt detection backends
-| backend | | OpenCL Caffe | |  |Movidius NCS | |
-| :--- | :---: | :---: | :---: | :---: | :---: |:---: | :---: |
-| topic| localization | tracking | detection | localization | tracking | detection |
-| fps | 6.63 | 12.15 | 8.88 | 7.44 | 13.85 | 10.5 |
-| latency <sup>(sec)</sup> | 0.23 | 0.33 | 0.17 | 0.21 | 0.24 | 0.15 |
+## KPI of differnt detection backends
+<table>
+    <tr>
+        <td></td>
+        <td>topic</td>
+        <td>fps</td>
+        <td>latency <sup>sec</sup></td>
+    </tr>
+    <tr>
+        <td rowspan='4'>OpenCL Caffe</td>
+    </tr>
+    <tr>
+        <td>localization</td>
+        <td>6.63</td>
+        <td>0.23</td>
+    </tr>
+    <tr>
+        <td>detection</td>
+        <td>8.88</td>
+        <td>0.17</td>
+    </tr>
+    <tr>
+        <td>tracking</td>
+        <td>12.15</td>
+        <td>0.33</td>
+    </tr>
+    <tr>
+        <td rowspan='4'>Movidius NCS</sup></td>
+    </tr>
+    <tr>
+        <td>localization</td>
+        <td>7.44</td>
+        <td>0.21</td>
+    </tr>
+    <tr>
+        <td>detection</td>
+        <td>10.5</td>
+        <td>0.15</td>
+    </tr>
+    <tr>
+        <td>tracking</td>
+        <td>13.85</td>
+        <td>0.24</td>
+    </tr>
+</table>
 
 * CNN model of Movidius NCS is MobileNet
 * Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel RealSense R45

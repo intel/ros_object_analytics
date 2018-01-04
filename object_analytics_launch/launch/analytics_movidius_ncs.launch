@@ -1,0 +1,74 @@
+<!--
+Copyright (c) 2017 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<launch>
+  <arg name="namespace"                     default="object_analytics" />
+  <arg name="manager"                       default="ObjectAnalyticsMgr" />
+  <arg name="splitter_name"                 default="splitter" />
+  <arg name="segmenter_name"                default="segmenter" />
+  <arg name="merger_name"                   default="merger" />
+  <arg name="tracker_name"                  default="tracker" />
+  <arg name="input_points"                  default="/camera/depth_registered/points"
+            doc="point cloud topic from sensor" />
+  <arg name="input_rgb"                     default="rgb"
+            doc="rgb topic from sensor" />
+  <arg name="input_detection"               default="detection"
+            doc="detection topic from object detection nodelet" />
+  <arg name="output_localization"           default="localization"
+            doc="localization result topic" />
+  <arg name="output_tracking"               default="tracking"
+            doc="tracking result topic" />
+
+  <group ns="$(arg namespace)">
+      <include file="$(find object_analytics_launch)/launch/includes/manager.launch">
+          <arg name="name"                      value="$(arg manager)" />
+          <arg name="num_worker_threads"        value="6" />
+      </include>
+
+      <include file="$(find object_analytics_launch)/launch/includes/splitter.launch">
+          <arg name="manager"                   value="$(arg manager)" />
+          <arg name="name"                      value="$(arg splitter_name)" />
+          <arg name="input"                     value="$(arg input_points)" />
+          <arg name="output_2d"                 value="$(arg input_rgb)" />
+      </include>
+
+      <include file="$(find object_analytics_launch)/launch/includes/segmenter.launch">
+          <arg name="manager"                   value="$(arg manager)" />
+          <arg name="name"                      value="$(arg segmenter_name)" />
+      </include>
+
+      <include file="$(find object_analytics_launch)/launch/includes/merger.launch">
+          <arg name="manager"                   value="$(arg manager)" />
+          <arg name="name"                      value="$(arg merger_name)" />
+          <arg name="input_2d"                  value="$(arg input_detection)" />
+          <arg name="output"                    value="$(arg output_localization)" />
+      </include>
+
+      <include file="$(find object_analytics_launch)/launch/includes/tracker.launch">
+          <arg name="manager"                   value="$(arg manager)" />
+          <arg name="name"                      value="$(arg tracker_name)" />
+          <arg name="input_rgb"                 value="$(arg input_rgb)" />
+          <arg name="input_2d"                  value="$(arg input_detection)" />
+          <arg name="output"                    value="$(arg output_tracking)" />
+      </include>
+
+      <include file="$(find movidius_ncs_launch)/launch/includes/ncs_stream_detection.launch">
+          <arg name="manager"                   value="$(arg manager)" />
+          <arg name="input_topic"               value="$(arg input_rgb)" />
+          <arg name="output_topic"              value="$(arg input_detection)" />
+      </include>
+
+  </group>
+</launch>

@@ -4,11 +4,11 @@ These packages aim to provide real-time object analyses over RGB-D camera inputs
 
 OA keeps integrating with various "state-of-the-art" algorithms.
 * Object detection offload to GPU, [ros_opencl_caffe](https://github.com/intel/ros_opencl_caffe), with Yolo v2 model and [OpenCL Caffe](https://github.com/01org/caffe/wiki/clCaffe#yolo2-model-support) framework
-* Object detection offload to VPU, [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs), with MobileNet SSD model and Caffe framework
+* Object detection offload to VPU, [ros_intel_movidius_ncs (devel branch)](https://github.com/intel/ros_intel_movidius_ncs/tree/devel/), with MobileNet SSD model and Caffe framework
 
 ## compiling dependencies
   ROS packages from [ros-kinetic-desktop-full](http://wiki.ros.org/kinetic/Installation/Ubuntu)
-  * roscpp
+ * roscpp
   * nodelet
   * std_msgs
   * sensor_msgs
@@ -23,7 +23,6 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   Other ROS packages
   * [object_msgs](https://github.com/intel/object_msgs)
   * [ros_intel_movidius_ncs](https://github.com/intel/ros_intel_movidius_ncs) or [opencl_caffe](https://github.com/intel/ros_opencl_caffe)
-  * [object_detect_launch](https://github.com/intel/ros_object_detect_launch)
 
   NOTE: In older version of "ros-kinetic-opencv3" where OpenCV 3.2.0 was used, self-built opencv_tracking is needed. While this's no more necessary since OpenCV 3.3 integrated. Check the OpenCV version from "/opt/ros/kinetic/share/opencv3/package.xml"
   * [opencv_tracking](https://github.com/opencv/opencv_contrib) tag 3.2.0
@@ -59,31 +58,20 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   roslaunch astra_launch astra.launch
   ```
 
-## command sample to launch object_analytics
-  Launch OA with default options
-  ```bash
-  roslaunch object_analytics_launch analytics.launch
-  ```
+## command to launch object_analytics
+* launch with OpenCL caffe as detection backend
+   ```bash
+   roslaunch object_analytics_launch analytics_opencl_caffe.launch
+   ```
+* launch with Movidius NCS as detection backend
+   ```bash
+   roslaunch object_analytics_launch analytics_opencl_caffe.launch
+   ```
 
   Frequently used options
   * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points". For realsense it is "/camera/points".
   ```bash
-  roslaunch object_analytics_launch analytics.launch input_points:=/camera/points
-  ```
-  * **detect_pkg** Specify arg "detect_pkg" to choose object detection package. Default is "movidius_ncs". Supported packages are
-    - detect_pkg:=opencl_caffe, [clCaffe](https://github.com/intel/ros_opencl_caffe)
-    - detect_pkg:=movidius_ncs (default), [Movidius NCS](https://github.com/intel/ros_intel_movidius_ncs)
-
-    To switch to opencl_caffe:
-  ```bash
-  roslaunch object_analytics_launch analytics.launch detect_pkg:=opencl_caffe
-  ```
-
-  Additional options for Movidius NCS
-  * **cnn_type** Specify arg "cnn_type" to choose [object detection model](https://github.com/intel/ros_intel_movidius_ncs#511-supported-cnn-models-1). Default is "mobilenet_ssd"
-  * **ncs_param_file** Specify the path to the cnn parameter file for the selected object detection model. Default path is provided for mobilenet_ssd. To switch to tiny yolo:
-  ```bash
-  roslaunch object_analytics_launch analytics.launch cnn_type:=tinyyolo_v1 ncs_param_file:=<path to ros_intel_movidius_ncs/movidius_ncs_launch/config/tinyyolo_v1.yaml>
+  roslaunch object_analytics_launch analytics_movidius_ncs.launch input_points:=/camera/points
   ```
 
 ## published topics
@@ -96,6 +84,56 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   object_analytics/tracking ([object_analytics_msgs::TrackedObjects](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
 
   object_analytics/detection ([object_msgs::ObjectsInBoxes](https://github.com/intel/object_msgs/tree/master/msg))
+
+
+## KPI of differnt detection backends
+<table>
+    <tr>
+        <td></td>
+        <td>topic</td>
+        <td>fps</td>
+        <td>latency <sup>sec</sup></td>
+    </tr>
+    <tr>
+        <td rowspan='4'>OpenCL Caffe</td>
+    </tr>
+    <tr>
+        <td>localization</td>
+        <td>6.63</td>
+        <td>0.23</td>
+    </tr>
+    <tr>
+        <td>detection</td>
+        <td>8.88</td>
+        <td>0.17</td>
+    </tr>
+    <tr>
+        <td>tracking</td>
+        <td>12.15</td>
+        <td>0.33</td>
+    </tr>
+    <tr>
+        <td rowspan='4'>Movidius NCS</sup></td>
+    </tr>
+    <tr>
+        <td>localization</td>
+        <td>7.44</td>
+        <td>0.21</td>
+    </tr>
+    <tr>
+        <td>detection</td>
+        <td>10.5</td>
+        <td>0.15</td>
+    </tr>
+    <tr>
+        <td>tracking</td>
+        <td>13.85</td>
+        <td>0.24</td>
+    </tr>
+</table>
+
+* CNN model of Movidius NCS is MobileNet
+* Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel(R) RealSense R45
 
 ## visualize tracking and localization results on RViz
   Steps to enable visualization on RViz are as following

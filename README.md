@@ -74,6 +74,18 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   roslaunch object_analytics_launch analytics_movidius_ncs.launch input_points:=/camera/points
   ```
 
+## published topics
+  object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))
+
+  object_analytics/pointcloud ([sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html))
+
+  object_analytics/localization ([object_analytics_msgs::ObjectsInBoxes3D](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
+
+  object_analytics/tracking ([object_analytics_msgs::TrackedObjects](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
+
+  object_analytics/detection ([object_msgs::ObjectsInBoxes](https://github.com/intel/object_msgs/tree/master/msg))
+
+
 ## KPI of differnt detection backends
 <table>
     <tr>
@@ -122,17 +134,6 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
 * CNN model of Movidius NCS is MobileNet
 * Hardware: Intel(R) Xeon(R) CPU E3-1275 v5 @3.60GHz, 32GB RAM, Intel(R) RealSense R45
-
-## published topics
-  object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))
-
-  object_analytics/pointcloud ([sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html))
-
-  object_analytics/localization ([object_analytics_msgs::ObjectsInBoxes3D](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
-
-  object_analytics/tracking ([object_analytics_msgs::TrackedObjects](https://github.com/intel/ros_object_analytics/tree/master/object_analytics_msgs/msg))
-
-  object_analytics/detection ([object_msgs::ObjectsInBoxes](https://github.com/intel/object_msgs/tree/master/msg))
 
 ## visualize tracking and localization results on RViz
   Steps to enable visualization on RViz are as following

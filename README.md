@@ -152,10 +152,10 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   ```bash
   catkin_make clean --pkg object_analytics_nodelet
   catkin_make -DMTEST_TRACKING_ENABLE_VIEW=ON --pkg object_analytics_nodelet
-  # to launch the test with realsense camera, specify arg "input_points"
-  rostest object_analytics_nodelet mtest_tracking.test input_points:=/camera/points
-  # to launch the test with astra camera, specify arg "camera"
-  rostest object_analytics_nodelet mtest_tracking.test camera:=2
+  # to launch the test with "camera" option, to specify RGB-D camera [realsense(default)|astra]
+  rostest object_analytics_nodelet mtest_tracking.test camera:=realsense
+  # to launch the test with "detect_pkg" option, to specify detection package [movidius_ncs(default)|opencl_caffe]
+  rostest object_analytics_nodelet mtest_tracking.test detect_pkg:=movidius_ncs
   ```
 
 ###### *Any security issue should be reported using process at https://01.org/security*

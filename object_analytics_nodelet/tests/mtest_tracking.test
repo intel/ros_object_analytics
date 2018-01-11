@@ -15,29 +15,37 @@ limitations under the License.
 -->
 
 <launch>
-  <arg name="camera"                     default="1" />
+  <arg name="camera"                     default="realsense" />
+  <arg name="detect_pkg"                 default="movidius_ncs" />
+
+  <!-- Additional options-->
   <arg name="input_points"               default="/camera/depth_registered/points" />
   <arg name="input_detection"            default="detection" />
 
-  <!--Camera Realsense: 1-->
-  <group if="$(eval camera is 1)">
+  <!-- Camera Realsense-->
+  <group if="$(eval camera == 'realsense')">
     <include file="$(find realsense_ros_camera)/launch/rs_camera.launch">
       <arg name="enable_pointcloud" value="true" />
       <arg name="enable_sync"       value="true" />
-      <arg name="enable_infra1"     value="false" />
-      <arg name="enable_infra2"     value="false" />
+      <arg name="enable_infra1"     value="true" />
+      <arg name="enable_infra2"     value="true" />
       <arg name="enable_fisheye"    value="false" />
       <arg name="enable_imu"        value="false" />
     </include>
   </group>
 
-  <!--Camera Astra: 2-->
-  <group if="$(eval camera is 2)">
+  <!-- Camera Astra-->
+  <group if="$(eval camera == 'astra')">
     <include file="$(find astra_launch)/launch/astra.launch" />
   </group>
 
-  <include file="$(find object_analytics_launch)/launch/analytics.launch">
-    <arg name="input_points" value="$(arg input_points)" />
+  <!-- Identify detection launch file-->
+  <arg if="$(eval detect_pkg == 'movidius_ncs')" name="launch_file" value="analytics_movidius_ncs.launch" />
+  <arg if="$(eval detect_pkg == 'opencl_caffe')" name="launch_file" value="analytics_opencl_caffe.launch" />
+
+  <include file="$(find object_analytics_launch)/launch/$(arg launch_file)">
+    <arg if="$(eval camera == 'realsense')" name="input_points" value="/camera/points" />
+    <arg unless="$(eval camera == 'realsense')" name="input_points" value="$(arg input_points)" />
     <arg name="input_detection" value="$(arg input_detection)" />
   </include>
 

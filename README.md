@@ -65,7 +65,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
    ```
 * launch with Movidius NCS as detection backend
    ```bash
-   roslaunch object_analytics_launch analytics_opencl_caffe.launch
+   roslaunch object_analytics_launch analytics_movidius_ncs.launch
    ```
 
   Frequently used options

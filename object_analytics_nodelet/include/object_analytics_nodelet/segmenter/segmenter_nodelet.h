@@ -38,6 +38,16 @@ private:
   /** Inherit from Nodelet class. Initialize Segmenter instance. */
   virtual void onInit();
 
+  /**
+   * @brief PointCloud2 callback
+   *
+   * @param[in] points PointCloud2 message from sensor.
+   */
+  void cbSegment(const sensor_msgs::PointCloud2::ConstPtr& points);
+
+  ros::Subscriber sub_;
+  ros::Publisher pub_;
+
   std::unique_ptr<Segmenter> impl_;
 };
 }  // namespace segmenter

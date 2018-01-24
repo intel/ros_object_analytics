@@ -18,6 +18,10 @@
 #define OBJECT_ANALYTICS_NODELET_MERGER_MERGER_NODELET_H
 
 #include <nodelet/nodelet.h>
+#include <std_msgs/Header.h>
+#include <message_filters/subscriber.h>
+#include <message_filters/time_synchronizer.h>
+#include <message_filters/sync_policies/approximate_time.h>
 
 #include "object_analytics_nodelet/merger/merger.h"
 
@@ -38,7 +42,29 @@ private:
   /** Inherit from Nodelet class. Initialize Merger instance. */
   virtual void onInit();
 
-  std::unique_ptr<Merger> impl_;
+  /**
+   * @brief TimeSynchronizer callback method.
+   *
+   * This method should be registered as callback function of TimeSynchronizer for detection topic and segmentation
+   * topic.
+   *
+   * @param[in] objects_in_boxes2d    Pointer to 2d detection result
+   * @param[in] objects_in_boxes3d    Pointer to 3d segmentation result
+   */
+  void cbMerge(const ObjectsInBoxes::ConstPtr& objects_in_boxes2d,
+               const ObjectsInBoxes3D::ConstPtr& objects_in_boxes3d);
+
+  static const int kMsgQueueSize;
+
+  using Subscriber2D = message_filters::Subscriber<ObjectsInBoxes>;
+  using Subscriber3D = message_filters::Subscriber<ObjectsInBoxes3D>;
+  using ApproximatePolicy = message_filters::sync_policies::ApproximateTime<ObjectsInBoxes, ObjectsInBoxes3D>;
+  using ApproximateSynchronizer2D3D = message_filters::Synchronizer<ApproximatePolicy>;
+
+  ros::Publisher pub_result_;
+  std::unique_ptr<Subscriber2D> sub_2d_;
+  std::unique_ptr<Subscriber3D> sub_3d_;
+  std::unique_ptr<ApproximateSynchronizer2D3D> sub_sync_;
 };
 }  // namespace merger
 }  // namespace object_analytics_nodelet

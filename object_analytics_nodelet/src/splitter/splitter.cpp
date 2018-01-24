@@ -16,9 +16,8 @@
 #include <string>
 
 #include <pcl_conversions/pcl_conversions.h>
-#include <sensor_msgs/Image.h>
 
-#include "object_analytics_nodelet/const.h"
+#include "object_analytics_nodelet/model/object3d.h"
 #include "object_analytics_nodelet/model/projector_impl.h"
 #include "object_analytics_nodelet/splitter/splitter.h"
 
@@ -26,25 +25,35 @@ namespace object_analytics_nodelet
 {
 namespace splitter
 {
+using object_analytics_nodelet::model::PointT;
 using object_analytics_nodelet::model::ProjectorImpl;
 
-Splitter::Splitter(ros::NodeHandle& nh)
-{
-  projector_ = ProjectorImpl::instance();
-  sub_pc2_ = nh.subscribe(Const::kTopicRegisteredPC2, 1, &Splitter::cbSplit, this);
-  pub_2d_ = nh.advertise<sensor_msgs::Image>(Const::kTopicRgb, 1);
-  pub_3d_ = nh.advertise<sensor_msgs::PointCloud2>(Const::kTopicPC2, 1);
-}
-
-void Splitter::cbSplit(const sensor_msgs::PointCloud2::ConstPtr& points)
+Splitter::Splitter()
 {
   try
   {
-    sensor_msgs::ImagePtr image(new sensor_msgs::Image());
+    projector_ = ProjectorImpl::instance();
+  }
+  catch (const std::runtime_error&)
+  {
+    ROS_WARN_STREAM("failed to get projector");
+  }
+}
+
+void Splitter::split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
+                     sensor_msgs::PointCloud2::Ptr& points2) const
+{
+  try
+  {
+    std_msgs::Header header = points->header;
+
+    pcl::PointCloud<PointT>::Ptr copiedPoints(new pcl::PointCloud<PointT>);
+    pcl::fromROSMsg(*points, *copiedPoints);
+    pcl::toROSMsg(*copiedPoints, *points2);
+    points2->header = header;
+
     pcl::toROSMsg(*points, *image);
-    image->header = points->header;
-    pub_2d_.publish(image);
-    pub_3d_.publish(points);
+    image->header = header;
   }
   catch (const std::runtime_error& e)
   {

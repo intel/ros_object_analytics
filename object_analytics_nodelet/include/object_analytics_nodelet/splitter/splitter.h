@@ -20,6 +20,7 @@
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <std_msgs/Header.h>
+#include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
 
 #include "object_analytics_nodelet/model/projector.h"
@@ -37,45 +38,23 @@ namespace splitter
 class Splitter
 {
 public:
-  /*
-   * Constructor
-   *
-   * @param[in] nh  Ros node handle
-   */
-  explicit Splitter(ros::NodeHandle& nh);
+  /** constructor */
+  Splitter();
 
   /** Default destructor */
   ~Splitter() = default;
 
+  /**
+   * @brief Split PointCloud2 w/ RGB into Image and PointClodu2 w/ RGB.
+   *
+   * param[in]      points  Pointer to PointCloud2 w/ RGB
+   * param[in,out]  image   Pointer to Image
+   * param[in,out]  points2 Pointer to PointCloud2 w/ RGB
+   */
+  void split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
+             sensor_msgs::PointCloud2::Ptr& points2) const;
+
 private:
-  /**
-   * @brief Callback for point cloud topic.
-   *
-   * Point cloud which must also contain rgb image information will be splitted into two types messages - rgb image and
-   * publish for 2d detection use, point cloud same as the input and publish for 3d segmentaion.
-   *
-   * @param[in] points Point cloud with rgb image from rgb-d sensor
-   */
-  void cbSplit(const sensor_msgs::PointCloud2::ConstPtr& points);
-
-  /**
-   * Callback for frequency control topic on segmentation
-   *
-   * @param[in] header Topic content
-   */
-  void cbSegmentationFlag(const std_msgs::Header::ConstPtr& header);
-
-  /**
-   * Callback for frequency control topic on tracking
-   *
-   * @param[in] header Topic content
-   */
-  void cbTrackingFlag(const std_msgs::Header::ConstPtr& header);
-
-  ros::NodeHandle nh_;
-  ros::Publisher pub_2d_;
-  ros::Publisher pub_3d_;
-  ros::Subscriber sub_pc2_;
   std::shared_ptr<object_analytics_nodelet::model::Projector> projector_;
 };
 }  // namespace splitter

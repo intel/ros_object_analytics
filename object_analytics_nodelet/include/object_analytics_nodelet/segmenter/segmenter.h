@@ -22,6 +22,7 @@
 #include <ros/ros.h>
 #include <sensor_msgs/PointCloud2.h>
 
+#include "object_analytics_msgs/ObjectsInBoxes3D.h"
 #include "object_analytics_nodelet/model/object2d.h"
 #include "object_analytics_nodelet/model/object3d.h"
 #include "object_analytics_nodelet/segmenter/algorithm_provider.h"
@@ -30,8 +31,10 @@ namespace object_analytics_nodelet
 {
 namespace segmenter
 {
+using object_analytics_msgs::ObjectsInBoxes3D;
 using object_analytics_nodelet::model::PointT;
 using object_analytics_nodelet::model::PointCloudT;
+using object_analytics_nodelet::segmenter::AlgorithmProvider;
 
 /** @class Segmenter
  * Segmenter implmentation. Segment the coming point cloud into individual objects and publish on segmentation topic.
@@ -44,22 +47,27 @@ public:
   /**
    * Constructor
    *
-   * @param[in] nh        Ros node handle
+   * @param[in] provider Pointer to AlgorithmProvider instance
    */
-  explicit Segmenter(ros::NodeHandle& nh);
+  explicit Segmenter(std::unique_ptr<AlgorithmProvider> provider);
 
   /** Default desctructor */
   ~Segmenter() = default;
 
-private:
-  void cbSegment(const sensor_msgs::PointCloud2::ConstPtr&);
-  void getPclPointCloud(const sensor_msgs::PointCloud2::ConstPtr&, PointCloudT&);
-  void segment(const PointCloudT::ConstPtr&, Object3DVector&);
-  void publishResult(const std_msgs::Header&, const Object3DVector&);
+  /**
+   * @brief Do segmentation on given PointCloud2 and return ObjectsInBoxes3D message back.
+   *
+   * @param[in]     points  Pointer point to PointCloud2 message from sensor.
+   * @param[in,out] msg     Pointer pint to ObjectsInBoxes3D message to take back.
+   */
+  void segment(const sensor_msgs::PointCloud2::ConstPtr& points, boost::shared_ptr<ObjectsInBoxes3D>& msg);
 
-  ros::Subscriber sub_;
-  ros::Publisher pub_;
-  std::unique_ptr<object_analytics_nodelet::segmenter::AlgorithmProvider> provider_;
+private:
+  void getPclPointCloud(const sensor_msgs::PointCloud2::ConstPtr&, PointCloudT&);
+  void doSegment(const PointCloudT::ConstPtr&, Object3DVector&);
+  void composeResult(const Object3DVector&, boost::shared_ptr<ObjectsInBoxes3D>&);
+
+  std::unique_ptr<AlgorithmProvider> provider_;
 };
 }  // namespace segmenter
 }  // namespace object_analytics_nodelet

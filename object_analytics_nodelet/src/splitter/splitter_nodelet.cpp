@@ -16,6 +16,7 @@
 
 #include <pluginlib/class_list_macros.h>
 
+#include "object_analytics_nodelet/const.h"
 #include "object_analytics_nodelet/splitter/splitter_nodelet.h"
 
 namespace object_analytics_nodelet
@@ -24,8 +25,21 @@ namespace splitter
 {
 void SplitterNodelet::onInit()
 {
+  impl_.reset(new Splitter());
+
   ros::NodeHandle nh = getNodeHandle();
-  impl_.reset(new Splitter(nh));
+  sub_pc2_ = nh.subscribe(Const::kTopicRegisteredPC2, 1, &SplitterNodelet::cbSplit, this);
+  pub_2d_ = nh.advertise<sensor_msgs::Image>(Const::kTopicRgb, 1);
+  pub_3d_ = nh.advertise<sensor_msgs::PointCloud2>(Const::kTopicPC2, 1);
+}
+
+void SplitterNodelet::cbSplit(const sensor_msgs::PointCloud2::ConstPtr& points)
+{
+  sensor_msgs::ImagePtr image(new sensor_msgs::Image);
+  sensor_msgs::PointCloud2::Ptr points2(new sensor_msgs::PointCloud2);
+  impl_->split(points, image, points2);
+  pub_2d_.publish(image);
+  pub_3d_.publish(points2);
 }
 }  // namespace splitter
 }  // namespace object_analytics_nodelet

@@ -38,6 +38,19 @@ private:
   /** Inherit from Nodelet class. Initialize Splitter instance. */
   virtual void onInit();
 
+  /**
+   * @brief Callback for point cloud topic.
+   *
+   * Point cloud which must also contain rgb image information will be splitted into two types messages - rgb image and
+   * publish for 2d detection use, point cloud same as the input and publish for 3d segmentaion.
+   *
+   * @param[in] points Point cloud with rgb image from rgb-d sensor
+   */
+  void cbSplit(const sensor_msgs::PointCloud2::ConstPtr& points);
+
+  ros::Publisher pub_2d_;
+  ros::Publisher pub_3d_;
+  ros::Subscriber sub_pc2_;
   std::unique_ptr<Splitter> impl_;
 };
 }  // namespace splitter

@@ -21,7 +21,6 @@
 #include <object_analytics_msgs/ObjectsInBoxes3D.h>
 #include <object_analytics_msgs/ObjectInBox3D.h>
 
-#include "object_analytics_nodelet/const.h"
 #include "object_analytics_nodelet/model/projector_impl.h"
 #include "object_analytics_nodelet/segmenter/organized_multi_plane_segmenter.h"
 #include "object_analytics_nodelet/segmenter/segmenter.h"
@@ -39,27 +38,20 @@ using pcl::copyPointCloud;
 using object_analytics_nodelet::model::Object3D;
 using object_analytics_nodelet::model::Projector;
 using object_analytics_nodelet::model::ProjectorImpl;
-using object_analytics_nodelet::segmenter::AlgorithmProvider;
 
-Segmenter::Segmenter(ros::NodeHandle& nh) : provider_(new AlgorithmProvider(nh))
+Segmenter::Segmenter(std::unique_ptr<AlgorithmProvider> provider) : provider_(std::move(provider))
 {
-  sub_ = nh.subscribe(Const::kTopicPC2, 1, &Segmenter::cbSegment, this);
-  pub_ = nh.advertise<object_analytics_msgs::ObjectsInBoxes3D>(Const::kTopicSegmentation, 1);
 }
 
-void Segmenter::cbSegment(const sensor_msgs::PointCloud2::ConstPtr& points)
+void Segmenter::segment(const sensor_msgs::PointCloud2::ConstPtr& points, boost::shared_ptr<ObjectsInBoxes3D>& msg)
 {
-  if (pub_.getNumSubscribers() == 0)
-  {
-    ROS_DEBUG_STREAM("No subscriber is listening on me, just skip");
-    return;
-  }
-
   PointCloudT::Ptr pointcloud(new PointCloudT);
   getPclPointCloud(points, *pointcloud);
+
   std::vector<Object3D> objects;
-  segment(pointcloud, objects);
-  publishResult(points->header, objects);
+  doSegment(pointcloud, objects);
+
+  composeResult(objects, msg);
 }
 
 void Segmenter::getPclPointCloud(const sensor_msgs::PointCloud2::ConstPtr& points, PointCloudT& pcl_cloud)
@@ -67,7 +59,7 @@ void Segmenter::getPclPointCloud(const sensor_msgs::PointCloud2::ConstPtr& point
   fromROSMsg<PointT>(*points, pcl_cloud);
 }
 
-void Segmenter::segment(const PointCloudT::ConstPtr& cloud, std::vector<Object3D>& objects)
+void Segmenter::doSegment(const PointCloudT::ConstPtr& cloud, std::vector<Object3D>& objects)
 {
   std::vector<PointIndices> cluster_indices;
   PointCloudT::Ptr cloud_segment(new PointCloudT);
@@ -91,12 +83,8 @@ void Segmenter::segment(const PointCloudT::ConstPtr& cloud, std::vector<Object3D
   ROS_DEBUG_STREAM("get " << objects.size() << " objects from segmentation");
 }
 
-void Segmenter::publishResult(const std_msgs::Header& header, const std::vector<Object3D>& objects)
+void Segmenter::composeResult(const std::vector<Object3D>& objects, boost::shared_ptr<ObjectsInBoxes3D>& msg)
 {
-  boost::shared_ptr<object_analytics_msgs::ObjectsInBoxes3D> msg =
-      boost::make_shared<object_analytics_msgs::ObjectsInBoxes3D>();
-  msg->header = header;
-
   for (auto& obj : objects)
   {
     object_analytics_msgs::ObjectInBox3D oib3;
@@ -107,7 +95,6 @@ void Segmenter::publishResult(const std_msgs::Header& header, const std::vector<
   }
 
   ROS_DEBUG_STREAM("segmenter publish message with " << objects.size() << " objects");
-  pub_.publish(msg);
 }
 }  // namespace segmenter
 }  // namespace object_analytics_nodelet

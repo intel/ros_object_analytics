@@ -18,10 +18,6 @@
 #define OBJECT_ANALYTICS_NODELET_MERGER_MERGER_H
 
 #include <ros/ros.h>
-#include <std_msgs/Header.h>
-#include <message_filters/subscriber.h>
-#include <message_filters/time_synchronizer.h>
-#include <message_filters/sync_policies/approximate_time.h>
 
 #include <object_analytics_msgs/ObjectsInBoxes3D.h>
 #include "object_analytics_nodelet/model/object_utils.h"
@@ -43,48 +39,31 @@ using object_analytics_msgs::ObjectsInBoxes3D;
 class Merger
 {
 public:
-  /**
-   * Constructor
-   *
-   * @param[in] nh    Ros node handle.
-   */
-  explicit Merger(ros::NodeHandle& nh);
+  /** Default constructor */
+  Merger() = default;
 
   /** Default destructor */
   ~Merger() = default;
 
-private:
   /**
-   * @brief TimeSynchronizer callback method.
-   *
-   * This method should be registered as callback function of TimeSynchronizer for detection topic and segmentation
-   * topic.
+   * @brief Merge detection and segmentation results and return.
    *
    * @param[in] objects_in_boxes2d    Pointer to 2d detection result
    * @param[in] objects_in_boxes3d    Pointer to 3d segmentation result
-   */
-  void cbMerge(const ObjectsInBoxes::ConstPtr& objects_in_boxes2d,
-               const ObjectsInBoxes3D::ConstPtr& objects_in_boxes3d);
-
-  /**
-   * Publish merged result on localization topic.
    *
-   * @param[in] relations   Pair list of 2d object and corresponding 3d object
-   * @param[in] header      The header of message
+   * @return Shared pointer to ObjectsInBoxes3D type message
    */
-  void publishResult(const RelationVector& relations, const std_msgs::Header& header);
+  static boost::shared_ptr<ObjectsInBoxes3D> merge(const ObjectsInBoxes::ConstPtr& objects_in_boxes2d,
+                                                   const ObjectsInBoxes3D::ConstPtr& objects_in_boxes3d);
 
-  using Subscriber2D = message_filters::Subscriber<ObjectsInBoxes>;
-  using Subscriber3D = message_filters::Subscriber<ObjectsInBoxes3D>;
-  using ApproximatePolicy = message_filters::sync_policies::ApproximateTime<ObjectsInBoxes, ObjectsInBoxes3D>;
-  using ApproximateSynchronizer2D3D = message_filters::Synchronizer<ApproximatePolicy>;
-
-  ros::Publisher pub_result_;
-  std::unique_ptr<Subscriber2D> sub_2d_;
-  std::unique_ptr<Subscriber3D> sub_3d_;
-  std::unique_ptr<ApproximateSynchronizer2D3D> sub_sync_;
-
-  static const int kMsgQueueSize;
+private:
+  /**
+   * Compose merged objects into ObjectsInBoxes3D message.
+   *
+   * @param[in]     relations   Pair list of 2d object and corresponding 3d object
+   * @param[in,out] header      Pointer to ObjectsInBoxes3D message
+   */
+  static void composeResult(const RelationVector& relations, boost::shared_ptr<ObjectsInBoxes3D>& msgs);
 };
 }  // namespace merger
 }  // namespace object_analytics_nodelet

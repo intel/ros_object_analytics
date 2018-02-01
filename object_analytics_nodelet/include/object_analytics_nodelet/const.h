@@ -28,17 +28,13 @@ namespace object_analytics_nodelet
 class Const
 {
 public:
-  static const std::string kTopicRegisteredPC2;   /**< Topic name of splitter nodelet's input message */
-  static const std::string kTopicPC2;             /**< Topic name of segmenter nodelet's input message */
-  static const std::string kTopicRgb;             /**< Topic name of 2d detection's input message */
-  static const std::string kTopicSegmentation;    /**< Topic name of segmenter nodelet's output message */
-  static const std::string kTopicDetection;       /**< Topic name of 2d detection's output message */
-  static const std::string kTopicLocalization;    /**< Topic name of merger nodelet's output message */
-  static const std::string kTopicTracking;        /**< Topic name of tracker nodelet's output message */
-  static const std::string kTopicColorCameraInfo; /**< Topic name of color camera info */
-  static const std::string kTopicDepthCameraInfo; /**< Topic name of depth camera info */
-
-  static const int kTimeoutCameraInfo; /**< Timeout for waiting camera info */
+  static const std::string kTopicRegisteredPC2; /**< Topic name of splitter nodelet's input message */
+  static const std::string kTopicPC2;           /**< Topic name of segmenter nodelet's input message */
+  static const std::string kTopicRgb;           /**< Topic name of 2d detection's input message */
+  static const std::string kTopicSegmentation;  /**< Topic name of segmenter nodelet's output message */
+  static const std::string kTopicDetection;     /**< Topic name of 2d detection's output message */
+  static const std::string kTopicLocalization;  /**< Topic name of merger nodelet's output message */
+  static const std::string kTopicTracking;      /**< Topic name of tracker nodelet's output message */
 };
 }  // namespace object_analytics_nodelet
 #endif  // OBJECT_ANALYTICS_NODELET_CONST_H

@@ -17,10 +17,13 @@
 #ifndef OBJECT_ANALYTICS_NODELET_MODEL_OBJECT_UTILS_H
 #define OBJECT_ANALYTICS_NODELET_MODEL_OBJECT_UTILS_H
 
+#define PCL_NO_PRECOMPILE
 #include <vector>
 #include <utility>
 
 #include <opencv2/core/types.hpp>
+
+#include <pcl/point_types.h>
 
 #include <object_msgs/ObjectsInBoxes.h>
 #include <object_analytics_msgs/ObjectInBox3D.h>
@@ -28,6 +31,22 @@
 
 #include "object_analytics_nodelet/model/object2d.h"
 #include "object_analytics_nodelet/model/object3d.h"
+
+struct PointXYZPixel
+{
+  PCL_ADD_POINT4D;
+  uint32_t pixel_x;
+  uint32_t pixel_y;
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+} EIGEN_ALIGN16;  // NOLINT
+
+POINT_CLOUD_REGISTER_POINT_STRUCT(PointXYZPixel,                // xyz + pixel x, y as fields
+                                  (float, x, x)                 // field x
+                                  (float, y, y)                 // field y
+                                  (float, z, z)                 // field z
+                                  (uint32_t, pixel_x, pixel_x)  // field pixel x
+                                  (uint32_t, pixel_y, pixel_y)  // field pixel y
+                                  )
 
 namespace object_analytics_nodelet
 {
@@ -81,7 +100,8 @@ public:
    * @param[out] x_min              Minimum point in x
    * @param[out] x_max              Maximum point in x
    */
-  static void getMinMaxPointsInX(const PointCloudT::ConstPtr& point_cloud, PointT& x_min, PointT& x_max);
+  static void getMinMaxPointsInX(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& x_min,
+                                 PointXYZPixel& x_max);
 
   /**
    * In points of given point cloud, find the minimum and maximum point in y filed.
@@ -90,7 +110,8 @@ public:
    * @param[out] y_min              Minimum point in y
    * @param[out] y_max              Maximum point in y
    */
-  static void getMinMaxPointsInY(const PointCloudT::ConstPtr& point_cloud, PointT& y_min, PointT& y_max);
+  static void getMinMaxPointsInY(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& y_min,
+                                 PointXYZPixel& y_max);
 
   /**
    * In points of given point cloud, find the minimum and maximum point in z filed.
@@ -99,15 +120,38 @@ public:
    * @param[out] z_min              Minimum point in z
    * @param[out] z_max              Maximum point in z
    */
-  static void getMinMaxPointsInZ(const PointCloudT::ConstPtr& point_cloud, PointT& z_min, PointT& z_max);
+  static void getMinMaxPointsInZ(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& z_min,
+                                 PointXYZPixel& z_max);
+
+  /**
+   * In points of given point cloud, find projected ROI in terms of pixel.
+   *
+   * @param[in]  point_cloud        Point cloud
+   * @param[out] roi                Projected ROI
+   */
+  static void getProjectedROI(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud,
+                              sensor_msgs::RegionOfInterest& roi);
 
   /**
    * @brief Calculate the match rate of two rectangles.
    *
    * The matching algorithm is based on ROI overlapping rate and ROI center deviation,
    * the rect with the most overlapping and the least center deviation will be returned.
+   *
+   * @param[in] r1                  One of the two rectangles.
+   * @param[in] r2                  The other one of the two rectangles.
    */
   static double getMatch(const cv::Rect2d& r1, const cv::Rect2d& r2);
+
+  /**
+   * @brief Extract the indices of a given point cloud as a new point cloud
+   *
+   * @param[in] original            The input point cloud dataset.
+   * @param[in] indices             The vector of indices representing the points to be copied from original.
+   * @param[out] dest               The resultant output point cloud dataset.
+   */
+  static void copyPointCloud(const PointCloudT::ConstPtr& original, const std::vector<int>& indices,
+                             pcl::PointCloud<PointXYZPixel>::Ptr& dest);
 };
 }  // namespace model
 }  // namespace object_analytics_nodelet

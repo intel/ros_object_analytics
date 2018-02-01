@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define PCL_NO_PRECOMPILE
 #include <cassert>
 #include <string>
 #include <vector>
@@ -24,20 +24,9 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 
-#include "object_analytics_nodelet/model/projector.h"
 #include "object_analytics_nodelet/model/object3d.h"
 
 #include "tests/unittest_util.h"
-
-using object_analytics_nodelet::model::Projector;
-
-class DummyProjector : public Projector
-{
-public:
-  void project3dToPixel(const geometry_msgs::Point32&, int&, int&)
-  {
-  }
-};
 
 TEST(UnitTestObject3D, calculateMinMax)
 {
@@ -50,10 +39,10 @@ TEST(UnitTestObject3D, calculateMinMax)
     indices.push_back(i);
   }
 
-  std::shared_ptr<Projector> projector = std::make_shared<DummyProjector>();
-  Object3D obj3(cloud, indices, projector);
+  Object3D obj3(cloud, indices);
   EXPECT_TRUE(obj3.getMin() == getPoint32(1.1, 1.2, 1.3));
   EXPECT_TRUE(obj3.getMax() == getPoint32(10.1, 10.2, 10.3));
+  EXPECT_TRUE(obj3.getRoi() == getRoi(0, 0, 4, 1));
 }
 
 int main(int argc, char** argv)

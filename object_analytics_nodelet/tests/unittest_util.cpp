@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define PCL_NO_PRECOMPILE
 #include <string>
 #include <utility>
 #include <vector>
@@ -163,6 +163,15 @@ PointT getPointT(float x, float y, float z)
 }
 
 bool operator==(const PointT& left, const PointT& right)
+{
+  if (left.x != right.x || left.y != right.y || left.z != right.z)
+  {
+    return false;
+  }
+  return true;
+}
+
+bool operator==(const PointXYZPixel& left, const PointT& right)
 {
   if (left.x != right.x || left.y != right.y || left.z != right.z)
   {

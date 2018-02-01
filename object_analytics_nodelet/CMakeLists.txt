@@ -81,7 +81,6 @@ add_library(${PROJECT_NAME}
   src/merger/merger_nodelet.cpp
   src/model/object2d.cpp
   src/model/object3d.cpp
-  src/model/projector_impl.cpp
   src/model/object_utils.cpp
   src/const.cpp
   src/tracker/tracking.cpp

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define PCL_NO_PRECOMPILE
 #include <memory>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include <object_analytics_msgs/ObjectsInBoxes3D.h>
 #include <object_analytics_msgs/ObjectInBox3D.h>
 
-#include "object_analytics_nodelet/model/projector_impl.h"
 #include "object_analytics_nodelet/segmenter/organized_multi_plane_segmenter.h"
 #include "object_analytics_nodelet/segmenter/segmenter.h"
 
@@ -36,8 +36,6 @@ using pcl::PointIndices;
 using pcl::IndicesPtr;
 using pcl::copyPointCloud;
 using object_analytics_nodelet::model::Object3D;
-using object_analytics_nodelet::model::Projector;
-using object_analytics_nodelet::model::ProjectorImpl;
 
 Segmenter::Segmenter(std::unique_ptr<AlgorithmProvider> provider) : provider_(std::move(provider))
 {
@@ -65,13 +63,12 @@ void Segmenter::doSegment(const PointCloudT::ConstPtr& cloud, std::vector<Object
   PointCloudT::Ptr cloud_segment(new PointCloudT);
   std::shared_ptr<Algorithm> seg = provider_->get();
   seg->segment(cloud, cloud_segment, cluster_indices);
-  std::shared_ptr<Projector> projector = ProjectorImpl::instance();
 
   for (auto& indices : cluster_indices)
   {
     try
     {
-      Object3D object3d(cloud_segment, indices.indices, projector);
+      Object3D object3d(cloud_segment, indices.indices);
       objects.push_back(object3d);
     }
     catch (std::exception& e)

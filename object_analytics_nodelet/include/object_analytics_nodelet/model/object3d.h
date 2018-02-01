@@ -17,6 +17,7 @@
 #ifndef OBJECT_ANALYTICS_NODELET_MODEL_OBJECT3D_H
 #define OBJECT_ANALYTICS_NODELET_MODEL_OBJECT3D_H
 
+#define PCL_NO_PRECOMPILE
 #include <vector>
 
 #include <geometry_msgs/Point32.h>
@@ -25,8 +26,6 @@
 
 #include <pcl/common/projection_matrix.h>
 #include <pcl/point_types.h>
-
-#include "object_analytics_nodelet/model/projector.h"
 
 namespace object_analytics_nodelet
 {
@@ -52,10 +51,8 @@ public:
    *
    * @param[in] cloud       PointCloud got from RGB-D sensor
    * @param[in] indices     Indices vector, each is the indices of one segmentation object
-   * @param[in] projector   Projector used for projection from 3D to 2D
    */
-  Object3D(const PointCloudT::ConstPtr& cloud, const std::vector<int>& indices,
-           const std::shared_ptr<Projector>& projector);
+  Object3D(const PointCloudT::ConstPtr& cloud, const std::vector<int>& indices);
 
   /**
    * @brief Construct a 3D object based on results published by segmenter.

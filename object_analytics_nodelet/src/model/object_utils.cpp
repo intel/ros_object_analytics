@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define PCL_NO_PRECOMPILE
+#include <vector>
 
+#include <ros/assert.h>
 #include <ros/console.h>
+
+#include <pcl/common/io.h>
 
 #include "object_analytics_nodelet/model/object_utils.h"
 
@@ -76,28 +81,51 @@ void ObjectUtils::findMaxIntersectionRelationships(const Object2DVector& objects
   }
 }
 
-void ObjectUtils::getMinMaxPointsInX(const PointCloudT::ConstPtr& point_cloud, PointT& x_min, PointT& x_max)
+void ObjectUtils::getMinMaxPointsInX(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& x_min,
+                                     PointXYZPixel& x_max)
 {
-  auto cmp_x = [](PointT const& l, PointT const& r) { return l.x < r.x; };
+  auto cmp_x = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.x < r.x; };
   auto minmax_x = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_x);
   x_min = *(minmax_x.first);
   x_max = *(minmax_x.second);
 }
 
-void ObjectUtils::getMinMaxPointsInY(const PointCloudT::ConstPtr& point_cloud, PointT& y_min, PointT& y_max)
+void ObjectUtils::getMinMaxPointsInY(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& y_min,
+                                     PointXYZPixel& y_max)
 {
-  auto cmp_y = [](PointT const& l, PointT const& r) { return l.y < r.y; };
+  auto cmp_y = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.y < r.y; };
   auto minmax_y = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_y);
   y_min = *(minmax_y.first);
   y_max = *(minmax_y.second);
 }
 
-void ObjectUtils::getMinMaxPointsInZ(const PointCloudT::ConstPtr& point_cloud, PointT& z_min, PointT& z_max)
+void ObjectUtils::getMinMaxPointsInZ(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud, PointXYZPixel& z_min,
+                                     PointXYZPixel& z_max)
 {
-  auto cmp_z = [](PointT const& l, PointT const& r) { return l.z < r.z; };
+  auto cmp_z = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.z < r.z; };
   auto minmax_z = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_z);
   z_min = *(minmax_z.first);
   z_max = *(minmax_z.second);
+}
+
+void ObjectUtils::getProjectedROI(const pcl::PointCloud<PointXYZPixel>::ConstPtr& point_cloud,
+                                  sensor_msgs::RegionOfInterest& roi)
+{
+  auto cmp_x = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.pixel_x < r.pixel_x; };
+  auto minmax_x = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_x);
+  roi.x_offset = minmax_x.first->pixel_x;
+  ROS_ASSERT(roi.x_offset >= 0);
+  ROS_ASSERT(max_x > roi.x_offset);
+  auto max_x = minmax_x.second->pixel_x;
+  roi.width = max_x - roi.x_offset;
+
+  auto cmp_y = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.pixel_y < r.pixel_y; };
+  auto minmax_y = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_y);
+  roi.y_offset = minmax_y.first->pixel_y;
+  auto max_y = minmax_y.second->pixel_y;
+  ROS_ASSERT(roi.y_offset >= 0);
+  ROS_ASSERT(max_y > roi.y_offset);
+  roi.height = max_y - roi.y_offset;
 }
 
 double ObjectUtils::getMatch(const cv::Rect2d& r1, const cv::Rect2d& r2)
@@ -117,5 +145,18 @@ double ObjectUtils::getMatch(const cv::Rect2d& r1, const cv::Rect2d& r2)
   /* calculate the match rate. The more overlap, the more matching. Contrary, the more deviation, the less matching*/
   return overlap * 100 / deviate;
 }
+
+void ObjectUtils::copyPointCloud(const PointCloudT::ConstPtr& original, const std::vector<int>& indices,
+                                 pcl::PointCloud<PointXYZPixel>::Ptr& dest)
+{
+  pcl::copyPointCloud(*original, indices, *dest);
+  uint32_t width = original->width;
+  for (uint32_t i = 0; i < indices.size(); i++)
+  {
+    dest->points[i].pixel_x = indices[i] % width;
+    dest->points[i].pixel_y = indices[i] / width;
+  }
+}
+
 }  // namespace model
 }  // namespace object_analytics_nodelet

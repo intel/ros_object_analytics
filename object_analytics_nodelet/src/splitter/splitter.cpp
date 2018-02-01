@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#define PCL_NO_PRECOMPILE
 #include <string>
 
 #include <pcl_conversions/pcl_conversions.h>
 
 #include "object_analytics_nodelet/model/object3d.h"
-#include "object_analytics_nodelet/model/projector_impl.h"
 #include "object_analytics_nodelet/splitter/splitter.h"
 
 namespace object_analytics_nodelet
@@ -26,22 +26,9 @@ namespace object_analytics_nodelet
 namespace splitter
 {
 using object_analytics_nodelet::model::PointT;
-using object_analytics_nodelet::model::ProjectorImpl;
-
-Splitter::Splitter()
-{
-  try
-  {
-    projector_ = ProjectorImpl::instance();
-  }
-  catch (const std::runtime_error&)
-  {
-    ROS_WARN_STREAM("failed to get projector");
-  }
-}
 
 void Splitter::split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
-                     sensor_msgs::PointCloud2::Ptr& points2) const
+                     sensor_msgs::PointCloud2::Ptr& points2)
 {
   try
   {

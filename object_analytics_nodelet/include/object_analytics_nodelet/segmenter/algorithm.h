@@ -17,6 +17,7 @@
 #ifndef OBJECT_ANALYTICS_NODELET_SEGMENTER_ALGORITHM_H
 #define OBJECT_ANALYTICS_NODELET_SEGMENTER_ALGORITHM_H
 
+#define PCL_NO_PRECOMPILE
 #include <vector>
 #include <pcl/point_types.h>
 #include <pcl/common/projection_matrix.h>

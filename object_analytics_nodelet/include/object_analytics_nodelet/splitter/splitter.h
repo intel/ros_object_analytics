@@ -17,13 +17,12 @@
 #ifndef OBJECT_ANALYTICS_NODELET_SPLITTER_SPLITTER_H
 #define OBJECT_ANALYTICS_NODELET_SPLITTER_SPLITTER_H
 
+#define PCL_NO_PRECOMPILE
 #include <ros/ros.h>
 #include <ros/time.h>
 #include <std_msgs/Header.h>
 #include <sensor_msgs/Image.h>
 #include <sensor_msgs/PointCloud2.h>
-
-#include "object_analytics_nodelet/model/projector.h"
 
 namespace object_analytics_nodelet
 {
@@ -38,8 +37,8 @@ namespace splitter
 class Splitter
 {
 public:
-  /** constructor */
-  Splitter();
+  /** Default constructor */
+  Splitter() = default;
 
   /** Default destructor */
   ~Splitter() = default;
@@ -51,11 +50,8 @@ public:
    * param[in,out]  image   Pointer to Image
    * param[in,out]  points2 Pointer to PointCloud2 w/ RGB
    */
-  void split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
-             sensor_msgs::PointCloud2::Ptr& points2) const;
-
-private:
-  std::shared_ptr<object_analytics_nodelet::model::Projector> projector_;
+  static void split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
+                    sensor_msgs::PointCloud2::Ptr& points2);
 };
 }  // namespace splitter
 }  // namespace object_analytics_nodelet

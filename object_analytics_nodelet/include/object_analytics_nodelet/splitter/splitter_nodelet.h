@@ -51,7 +51,6 @@ private:
   ros::Publisher pub_2d_;
   ros::Publisher pub_3d_;
   ros::Subscriber sub_pc2_;
-  std::unique_ptr<Splitter> impl_;
 };
 }  // namespace splitter
 }  // namespace object_analytics_nodelet

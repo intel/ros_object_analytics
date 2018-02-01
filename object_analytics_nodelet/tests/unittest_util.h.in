@@ -16,14 +16,13 @@
 
 #ifndef TESTS_UNITTEST_UTIL_H
 #define TESTS_UNITTEST_UTIL_H
-
+#define PCL_NO_PRECOMPILE
 #include <string>
 #include <utility>
 #include <vector>
 
 #include <gtest/gtest.h>
 #include <pcl/io/pcd_io.h>
-
 #include "object_analytics_nodelet/model/object_utils.h"
 
 using geometry_msgs::Point32;
@@ -60,5 +59,6 @@ bool operator==(const ObjectInBox3D& left, const Object3D& right);
 bool operator==(const Object2D& left, const Object2D& right);
 bool operator==(const Object3D& left, const Object3D& right);
 bool operator==(const PointT& left, const PointT& right);
+bool operator==(const PointXYZPixel& left, const PointT& right);
 
 #endif  // TESTS_UNITTEST_UTIL_H

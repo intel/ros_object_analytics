@@ -27,8 +27,4 @@ const std::string Const::kTopicSegmentation = "segmentation";
 const std::string Const::kTopicDetection = "detection";
 const std::string Const::kTopicLocalization = "localization";
 const std::string Const::kTopicTracking = "tracking";
-const std::string Const::kTopicColorCameraInfo = "/camera/color/camera_info";
-const std::string Const::kTopicDepthCameraInfo = "/camera/depth/camera_info";
-
-const int Const::kTimeoutCameraInfo = 30;
 }  // namespace object_analytics_nodelet

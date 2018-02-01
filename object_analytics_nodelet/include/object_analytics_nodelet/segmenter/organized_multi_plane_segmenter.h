@@ -17,6 +17,8 @@
 #ifndef OBJECT_ANALYTICS_NODELET_SEGMENTER_ORGANIZED_MULTI_PLANE_SEGMENTER_H
 #define OBJECT_ANALYTICS_NODELET_SEGMENTER_ORGANIZED_MULTI_PLANE_SEGMENTER_H
 
+#define PCL_NO_PRECOMPILE
+
 #include <vector>
 
 #include <pcl/features/impl/integral_image_normal.hpp>

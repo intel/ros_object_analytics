@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define PCL_NO_PRECOMPILE
 #include <string>
 #include <utility>
 #include <vector>
@@ -102,20 +102,192 @@ TEST(UnitTestObjectUtils, getMinMaxPointsInXYZ)
   PointCloudT::Ptr cloud(new PointCloudT);
   readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/object3d.pcd", cloud);
 
-  PointT x_min, x_max;
-  ObjectUtils::getMinMaxPointsInX(cloud, x_min, x_max);
+  pcl::PointCloud<PointXYZPixel>::Ptr cloudPixel(new pcl::PointCloud<PointXYZPixel>);
+
+  std::vector<int> indices;
+  for (auto i = 0; i < static_cast<int>(cloud->size()); i++)
+  {
+    indices.push_back(i);
+  }
+  ObjectUtils::copyPointCloud(cloud, indices, cloudPixel);
+
+  PointXYZPixel x_min, x_max;
+  ObjectUtils::getMinMaxPointsInX(cloudPixel, x_min, x_max);
   EXPECT_TRUE(x_min == getPointT(1.1, 2.2, 3.3));
   EXPECT_TRUE(x_max == getPointT(10.1, 8.2, 8.3));
 
-  PointT y_min, y_max;
-  ObjectUtils::getMinMaxPointsInY(cloud, y_min, y_max);
+  PointXYZPixel y_min, y_max;
+  ObjectUtils::getMinMaxPointsInY(cloudPixel, y_min, y_max);
   EXPECT_TRUE(y_min == getPointT(2.1, 1.2, 2.3));
   EXPECT_TRUE(y_max == getPointT(9.1, 10.2, 9.3));
 
-  PointT z_min, z_max;
-  ObjectUtils::getMinMaxPointsInZ(cloud, z_min, z_max);
+  PointXYZPixel z_min, z_max;
+  ObjectUtils::getMinMaxPointsInZ(cloudPixel, z_min, z_max);
   EXPECT_TRUE(z_min == getPointT(3.1, 3.2, 1.3));
   EXPECT_TRUE(z_max == getPointT(8.1, 9.2, 10.3));
+}
+
+TEST(UnitTestObjectUtils, copyPointCloud_All)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/copy.pcd", cloud);
+
+  std::vector<int> indices;
+  for (auto i = 0; i < static_cast<int>(cloud->size()); i++)
+  {
+    indices.push_back(i);
+  }
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+
+  for (uint32_t y = 0; y < 5; ++y)
+  {
+    for (uint32_t x = 0; x < 5; ++x)
+    {
+      PointXYZPixel p = seg->points[y * 5 + x];
+      EXPECT_TRUE(p.pixel_x == x);
+      EXPECT_TRUE(p.pixel_y == y);
+    }
+  }
+}
+
+TEST(UnitTestObjectUtils, copyPointCloud_Empty)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/copy.pcd", cloud);
+
+  std::vector<int> indices;
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  EXPECT_EQ(seg->size(), 0);
+}
+
+TEST(UnitTestObjectUtils, copyPointCloud_Diagonal)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/copy.pcd", cloud);
+  int i[] = { 0, 6, 12, 18, 24 };
+  std::vector<int> indices(i, i + sizeof(i) / sizeof(uint32_t));
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+
+  for (uint32_t i = 0; i < 5; ++i)
+  {
+    EXPECT_EQ(seg->points[i].pixel_x, i);
+    EXPECT_EQ(seg->points[i].pixel_y, i);
+  }
+}
+
+TEST(UnitTestObjectUtils, getProjectedROI_NormalShapeNoEdgeOnImageBorder)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/project.pcd", cloud);
+  // NOLINTNEXTLINE
+  int i[] = {
+    15,                          // y_offset is 1
+    23, 24, 25, 26, 27, 28,      // no edge this row
+    32, 33, 34, 35, 36, 37, 38,  // width is 8 - 1 = 7
+    42, 43, 44,                  // no edge this row
+    51, 52, 53, 54,              // x_offset is 1
+    62, 63, 64,                  // no edge this row
+    72, 73, 74, 75, 76, 77, 78,  // width is 8 - 1 = 7
+    86                           // height is 8 - 1 = 7
+  };
+  std::vector<int> indices(i, i + sizeof(i) / sizeof(uint32_t));
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  sensor_msgs::RegionOfInterest roi;
+  ObjectUtils::getProjectedROI(seg, roi);
+  EXPECT_EQ(roi.x_offset, 1);
+  EXPECT_EQ(roi.y_offset, 1);
+  EXPECT_EQ(roi.width, 7);
+  EXPECT_EQ(roi.height, 7);
+}
+
+TEST(UnitTestObjectUtils, getProjectedROI_NormalShapeAllEdgesOnImageBorder)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/project.pcd", cloud);
+  // NOLINTNEXTLINE
+  int i[] = {
+    5,                               // y_offset is 0
+    23, 24, 25, 26, 27, 28,          // no edge this row
+    32, 33, 34, 35, 36, 37, 38, 39,  // width is 9 - 0 = 9
+    42, 43, 44,                      // no edge this row
+    51, 52, 53, 54,                  // no edge this row
+    60, 61, 62, 63, 64,              // x_offset is 0
+    73, 74, 75, 76, 77, 78,          // no edge this row
+    85, 86,                          // no edge this row
+    96                               // height is 9 - 0 = 9
+  };
+  std::vector<int> indices(i, i + sizeof(i) / sizeof(uint32_t));
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  sensor_msgs::RegionOfInterest roi;
+  ObjectUtils::getProjectedROI(seg, roi);
+  EXPECT_EQ(roi.x_offset, 0);
+  EXPECT_EQ(roi.y_offset, 0);
+  EXPECT_EQ(roi.width, 9);
+  EXPECT_EQ(roi.height, 9);
+}
+
+TEST(UnitTestObjectUtils, getProjectedROI_ShapeIsFullOfImage)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/project.pcd", cloud);
+  std::vector<int> indices;
+  for (int i = 0; i < 100; i++)
+  {
+    indices.push_back(i);
+  }
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  sensor_msgs::RegionOfInterest roi;
+  ObjectUtils::getProjectedROI(seg, roi);
+  EXPECT_EQ(roi.x_offset, 0);
+  EXPECT_EQ(roi.y_offset, 0);
+  EXPECT_EQ(roi.width, 9);
+  EXPECT_EQ(roi.height, 9);
+}
+
+TEST(UnitTestObjectUtils, getProjectedROI_ShapeIsOneRow)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/project.pcd", cloud);
+  int i[] = { 23, 24, 25, 26, 27, 28 };
+  std::vector<int> indices(i, i + sizeof(i) / sizeof(uint32_t));
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  sensor_msgs::RegionOfInterest roi;
+  ObjectUtils::getProjectedROI(seg, roi);
+  EXPECT_EQ(roi.x_offset, 3);
+  EXPECT_EQ(roi.y_offset, 2);
+  EXPECT_EQ(roi.width, 5);
+  EXPECT_EQ(roi.height, 0);
+}
+
+TEST(UnitTestObjectUtils, getProjectedROI_ShapeIsOneColumn)
+{
+  PointCloudT::Ptr cloud(new PointCloudT);
+  readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/project.pcd", cloud);
+  int i[] = { 23, 33, 43, 53, 63, 73 };
+  std::vector<int> indices(i, i + sizeof(i) / sizeof(uint32_t));
+
+  pcl::PointCloud<PointXYZPixel>::Ptr seg(new pcl::PointCloud<PointXYZPixel>);
+  ObjectUtils::copyPointCloud(cloud, indices, seg);
+  sensor_msgs::RegionOfInterest roi;
+  ObjectUtils::getProjectedROI(seg, roi);
+  EXPECT_EQ(roi.x_offset, 3);
+  EXPECT_EQ(roi.y_offset, 2);
+  EXPECT_EQ(roi.width, 0);
+  EXPECT_EQ(roi.height, 5);
 }
 
 TEST(UnitTestObjectUtils, intersectionArea)

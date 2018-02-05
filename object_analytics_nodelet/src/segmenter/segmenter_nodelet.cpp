@@ -17,12 +17,14 @@
 #include <pluginlib/class_list_macros.h>
 #include "object_analytics_nodelet/const.h"
 #include "object_analytics_nodelet/segmenter/segmenter_nodelet.h"
+#include "object_analytics_nodelet/segmenter/algorithm_provider_impl.h"
 
 namespace object_analytics_nodelet
 {
 namespace segmenter
 {
 using object_analytics_nodelet::segmenter::AlgorithmProvider;
+using object_analytics_nodelet::segmenter::AlgorithmProviderImpl;
 
 void SegmenterNodelet::onInit()
 {
@@ -32,7 +34,7 @@ void SegmenterNodelet::onInit()
 
   try
   {
-    impl_.reset(new Segmenter(std::unique_ptr<AlgorithmProvider>(new AlgorithmProvider(nh))));
+    impl_.reset(new Segmenter(std::unique_ptr<AlgorithmProvider>(new AlgorithmProviderImpl(nh))));
   }
   catch (const std::runtime_error& e)
   {

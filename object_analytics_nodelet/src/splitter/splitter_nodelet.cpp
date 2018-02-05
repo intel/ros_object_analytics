@@ -34,10 +34,9 @@ void SplitterNodelet::onInit()
 void SplitterNodelet::cbSplit(const sensor_msgs::PointCloud2::ConstPtr& points)
 {
   sensor_msgs::ImagePtr image(new sensor_msgs::Image);
-  sensor_msgs::PointCloud2::Ptr points2(new sensor_msgs::PointCloud2);
-  Splitter::split(points, image, points2);
+  Splitter::split(points, image);
   pub_2d_.publish(image);
-  pub_3d_.publish(points2);
+  pub_3d_.publish(points);
 }
 }  // namespace splitter
 }  // namespace object_analytics_nodelet

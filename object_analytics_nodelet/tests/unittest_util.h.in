@@ -37,6 +37,7 @@ using object_analytics_nodelet::model::PointCloudT;
 using object_analytics_nodelet::model::Object2D;
 using object_analytics_nodelet::model::Object3D;
 using object_analytics_nodelet::model::ObjectUtils;
+using std_msgs::Header;
 
 #define RESOURCE_DIR "@RESOURCE_DIR@"
 
@@ -52,13 +53,18 @@ ObjectInBox3D getObjectInBox3D(int x_offset, int y_offset, int width, int height
 Point32 getPoint32(float x, float y, float z);
 PointT getPointT(float x, float y, float z);
 
+Header createHeader(uint32_t seq, const ros::Time& stamp, const std::string& frame_id);
+
+bool operator==(const Object& left, const Object& right);
 bool operator==(const RegionOfInterest& left, const RegionOfInterest& right);
 bool operator==(const ObjectInBox& left, const Object2D& right);
 bool operator==(const Point32& left, const Point32& right);
 bool operator==(const ObjectInBox3D& left, const Object3D& right);
+bool operator==(const ObjectInBox3D& left, const ObjectInBox3D& right);
 bool operator==(const Object2D& left, const Object2D& right);
 bool operator==(const Object3D& left, const Object3D& right);
 bool operator==(const PointT& left, const PointT& right);
 bool operator==(const PointXYZPixel& left, const PointT& right);
+bool operator==(const Header& left, const Header& right);
 
 #endif  // TESTS_UNITTEST_UTIL_H

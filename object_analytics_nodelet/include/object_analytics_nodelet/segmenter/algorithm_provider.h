@@ -17,20 +17,12 @@
 #ifndef OBJECT_ANALYTICS_NODELET_SEGMENTER_ALGORITHM_PROVIDER_H
 #define OBJECT_ANALYTICS_NODELET_SEGMENTER_ALGORITHM_PROVIDER_H
 
-#define PCL_NO_PRECOMPILE
-#include <map>
-#include <string>
-
-#include <dynamic_reconfigure/server.h>
-
-#include "object_analytics_nodelet/SegmentationAlgorithmsConfig.h"
 #include "object_analytics_nodelet/segmenter/algorithm.h"
 
 namespace object_analytics_nodelet
 {
 namespace segmenter
 {
-using object_analytics_nodelet::SegmentationAlgorithmsConfig;
 using object_analytics_nodelet::segmenter::Algorithm;
 
 /** @class AlorithmProvider
@@ -40,34 +32,18 @@ class AlgorithmProvider
 {
 public:
   /**
-   * Constructor. Initialize algorithm map.
-   *
-   * @param[in] nh Ros NodeHandle
-   */
-  explicit AlgorithmProvider(ros::NodeHandle& nh);
-
-  /**
    * Get current selected algorithm instance
    *
    * @return Pointer to current slected algorithm instance
    */
-  std::shared_ptr<Algorithm> get();
+  virtual std::shared_ptr<Algorithm> get() = 0;
 
-private:
   /**
-   * Callback method. Called everytime SegmentationAlgorithmsConfig is changed, member variable conf_ will be updated
-   * accordingly.
-   *
-   * @param[in] config  Changed SegmentationAlgorithmsConfig instance
-   * @param[in] level   Not used
+   * Default virtual destructor
    */
-  void cbConfig(SegmentationAlgorithmsConfig& config, uint32_t level);
-
-  static const std::string DEFAULT;
-
-  std::map<std::string, std::shared_ptr<Algorithm>> algorithms_;
-  boost::shared_ptr<dynamic_reconfigure::Server<SegmentationAlgorithmsConfig>> conf_srv_;
-  SegmentationAlgorithmsConfig conf_;
+  virtual ~AlgorithmProvider()
+  {
+  }
 };
 }  // namespace segmenter
 }  // namespace object_analytics_nodelet

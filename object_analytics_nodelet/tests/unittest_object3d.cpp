@@ -28,7 +28,7 @@
 
 #include "tests/unittest_util.h"
 
-TEST(UnitTestObject3D, calculateMinMax)
+TEST(UnitTestObject3D, constructor_TwoParameters)
 {
   PointCloudT::Ptr cloud(new PointCloudT);
   readPointCloudFromPCD(std::string(RESOURCE_DIR) + "/object3d.pcd", cloud);
@@ -43,6 +43,15 @@ TEST(UnitTestObject3D, calculateMinMax)
   EXPECT_TRUE(obj3.getMin() == getPoint32(1.1, 1.2, 1.3));
   EXPECT_TRUE(obj3.getMax() == getPoint32(10.1, 10.2, 10.3));
   EXPECT_TRUE(obj3.getRoi() == getRoi(0, 0, 4, 1));
+}
+
+TEST(UnitTestObject3D, constructor_OneParameter)
+{
+  ObjectInBox3D objectInBox3D = getObjectInBox3D(0, 0, 100, 100, 20, 30, 40, 200, 300, 400);
+  Object3D obj3(objectInBox3D);
+  EXPECT_TRUE(obj3.getMin() == getPoint32(20, 30, 40));
+  EXPECT_TRUE(obj3.getMax() == getPoint32(200, 300, 400));
+  EXPECT_TRUE(obj3.getRoi() == getRoi(0, 0, 100, 100));
 }
 
 int main(int argc, char** argv)

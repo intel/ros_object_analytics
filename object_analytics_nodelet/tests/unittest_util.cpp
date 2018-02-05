@@ -92,6 +92,16 @@ ObjectInBox3D getObjectInBox3D(int x_offset, int y_offset, int width, int height
   return oib3d;
 }
 
+bool operator==(const Object& left, const Object& right)
+{
+  if (left.object_name != right.object_name || left.probability != right.probability)
+  {
+    return false;
+  }
+
+  return true;
+}
+
 bool operator==(const RegionOfInterest& left, const RegionOfInterest& right)
 {
   if (left.x_offset != right.x_offset || left.y_offset != right.y_offset || left.width != right.width ||
@@ -126,6 +136,16 @@ bool operator==(const Point32& left, const Point32& right)
 bool operator==(const ObjectInBox3D& left, const Object3D& right)
 {
   if (left.roi == right.getRoi() && left.max == right.getMax() && left.min == right.getMin())
+  {
+    return true;
+  }
+
+  return false;
+}
+
+bool operator==(const ObjectInBox3D& left, const ObjectInBox3D& right)
+{
+  if (left.roi == right.roi && left.max == right.max && left.min == right.min)
   {
     return true;
   }
@@ -174,6 +194,24 @@ bool operator==(const PointT& left, const PointT& right)
 bool operator==(const PointXYZPixel& left, const PointT& right)
 {
   if (left.x != right.x || left.y != right.y || left.z != right.z)
+  {
+    return false;
+  }
+  return true;
+}
+
+Header createHeader(uint32_t seq, const ros::Time& stamp, const std::string& frame_id)
+{
+  Header header;
+  header.seq = seq;
+  header.stamp = stamp;
+  header.frame_id = frame_id;
+  return header;
+}
+
+bool operator==(const Header& left, const Header& right)
+{
+  if (left.seq != right.seq || left.stamp != right.stamp || left.frame_id != right.frame_id)
   {
     return false;
   }

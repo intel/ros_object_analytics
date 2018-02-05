@@ -75,7 +75,7 @@ add_library(${PROJECT_NAME}
   src/splitter/splitter_nodelet.cpp
   src/segmenter/segmenter.cpp
   src/segmenter/segmenter_nodelet.cpp
-  src/segmenter/algorithm_provider.cpp
+  src/segmenter/algorithm_provider_impl.cpp
   src/segmenter/organized_multi_plane_segmenter.cpp
   src/merger/merger.cpp
   src/merger/merger_nodelet.cpp
@@ -165,6 +165,10 @@ set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRAR
   configure_file(tests/unittest_util.h.in tests/unittest_util.h)
   include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+  catkin_add_gtest(unittest_object2d tests/unittest_object2d.cpp tests/unittest_util.cpp
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+  target_link_libraries(unittest_object2d ${UNITEST_LIBRARIES})
+
   catkin_add_gtest(unittest_object3d tests/unittest_object3d.cpp tests/unittest_util.cpp
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
   target_link_libraries(unittest_object3d ${UNITEST_LIBRARIES})
@@ -172,6 +176,18 @@ set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRAR
   catkin_add_gtest(unittest_objectutils tests/unittest_objectutils.cpp tests/unittest_util.cpp
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
   target_link_libraries(unittest_objectutils ${UNITEST_LIBRARIES})
+
+  catkin_add_gtest(unittest_merger tests/unittest_merger.cpp tests/unittest_util.cpp
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+  target_link_libraries(unittest_merger ${UNITEST_LIBRARIES})
+
+  catkin_add_gtest(unittest_splitter tests/unittest_splitter.cpp tests/unittest_util.cpp
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+  target_link_libraries(unittest_splitter ${UNITEST_LIBRARIES})
+
+  catkin_add_gtest(unittest_segmenter tests/unittest_segmenter.cpp tests/unittest_util.cpp
+    WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
+  target_link_libraries(unittest_segmenter ${UNITEST_LIBRARIES})
 
   # lib module test
   option(MTEST_TRACKING_ENABLE_VIEW "enable visual outputs" OFF)

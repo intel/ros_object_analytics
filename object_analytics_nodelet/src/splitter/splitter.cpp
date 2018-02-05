@@ -27,18 +27,11 @@ namespace splitter
 {
 using object_analytics_nodelet::model::PointT;
 
-void Splitter::split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
-                     sensor_msgs::PointCloud2::Ptr& points2)
+void Splitter::split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image)
 {
   try
   {
     std_msgs::Header header = points->header;
-
-    pcl::PointCloud<PointT>::Ptr copiedPoints(new pcl::PointCloud<PointT>);
-    pcl::fromROSMsg(*points, *copiedPoints);
-    pcl::toROSMsg(*copiedPoints, *points2);
-    points2->header = header;
-
     pcl::toROSMsg(*points, *image);
     image->header = header;
   }

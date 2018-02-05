@@ -44,14 +44,12 @@ public:
   ~Splitter() = default;
 
   /**
-   * @brief Split PointCloud2 w/ RGB into Image and PointClodu2 w/ RGB.
+   * @brief Split PointCloud2 w/ RGB into Image.
    *
    * param[in]      points  Pointer to PointCloud2 w/ RGB
    * param[in,out]  image   Pointer to Image
-   * param[in,out]  points2 Pointer to PointCloud2 w/ RGB
    */
-  static void split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image,
-                    sensor_msgs::PointCloud2::Ptr& points2);
+  static void split(const sensor_msgs::PointCloud2::ConstPtr& points, sensor_msgs::Image::Ptr& image);
 };
 }  // namespace splitter
 }  // namespace object_analytics_nodelet

@@ -25,6 +25,14 @@
 
 #include "tests/unittest_util.h"
 
+TEST(UnitTestObjectUtils, fill2DObjects_Empty)
+{
+  ObjectsInBoxes::Ptr objects(new ObjectsInBoxes);
+  std::vector<Object2D> objects2d;
+  ObjectUtils::fill2DObjects(objects, objects2d);
+  EXPECT_EQ(objects2d.size(), 0);
+}
+
 TEST(UnitTestObjectUtils, fill2DObjects_NormalCase)
 {
   ObjectsInBoxes::Ptr objects(new ObjectsInBoxes);
@@ -40,6 +48,13 @@ TEST(UnitTestObjectUtils, fill2DObjects_NormalCase)
   EXPECT_TRUE(first == objects2d[0]);
   EXPECT_TRUE(second == objects2d[1]);
   EXPECT_TRUE(third == objects2d[2]);
+}
+
+TEST(UnitTestObjectUtils, fill3DObjects_Empty)
+{
+  ObjectsInBoxes3D::Ptr objects(new ObjectsInBoxes3D);
+  std::vector<Object3D> objects3d;
+  EXPECT_EQ(objects3d.size(), 0);
 }
 
 TEST(UnitTestObjectUtils, fill3DObjects_NormalCase)
@@ -290,19 +305,27 @@ TEST(UnitTestObjectUtils, getProjectedROI_ShapeIsOneColumn)
   EXPECT_EQ(roi.height, 5);
 }
 
-TEST(UnitTestObjectUtils, intersectionArea)
+TEST(UnitTestObjectUtils, getMatch_NoMatch)
 {
-  Object2D obj1(getObjectInBox(0, 0, 100, 100, "ppl", 1));
+  cv::Rect2d left(0, 0, 100, 100);
+  cv::Rect2d right(101, 101, 100, 100);
+  EXPECT_EQ(ObjectUtils::getMatch(left, right), 0);
+}
 
-  cv::Rect2d base1(0, 0, 100, 100);
-  cv::Rect2d match1(1, 1, 100, 100);
-  cv::Rect2d not_match1(0, 0, 1000, 1000);
-  EXPECT_TRUE(ObjectUtils::getMatch(base1, match1) > ObjectUtils::getMatch(base1, not_match1));
+TEST(UnitTestObjectUtils, getMatch_ExactMatchBetterThanBiggerMatch)
+{
+  cv::Rect2d origin(50, 50, 100, 100);
+  cv::Rect2d exact(50, 50, 100, 100);
+  cv::Rect2d bigger(40, 40, 110, 110);
+  EXPECT_GT(ObjectUtils::getMatch(origin, exact), ObjectUtils::getMatch(origin, bigger));
+}
 
-  cv::Rect2d base2(50, 50, 100, 100);
-  cv::Rect2d match2(30, 30, 130, 130);
-  cv::Rect2d not_match2(40, 40, 140, 140);
-  EXPECT_TRUE(ObjectUtils::getMatch(base2, match2) > ObjectUtils::getMatch(base2, not_match2));
+TEST(UnitTestObjectUtils, getMatch_SameOverlapBetterDiviation)
+{
+  cv::Rect2d origin(0, 0, 100, 100);
+  cv::Rect2d bigDiviation(0, 0, 50, 50);
+  cv::Rect2d smallDiviation(20, 20, 70, 70);
+  EXPECT_GT(ObjectUtils::getMatch(origin, smallDiviation), ObjectUtils::getMatch(origin, bigDiviation));
 }
 
 int main(int argc, char** argv)

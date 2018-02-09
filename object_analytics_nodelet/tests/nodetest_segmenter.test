@@ -1,0 +1,46 @@
+<!--
+Copyright (c) 2017 Intel Corporation
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<launch>
+  <arg name="manager"                       default="TestObjectAnalyticsMgr" />
+
+  <group ns="ns">
+     <include file="$(find object_analytics_launch)/launch/includes/manager.launch">
+         <arg name="name"                      value="$(arg manager)" />
+         <arg name="num_worker_threads"        value="1" />
+     </include>
+
+     <include file="$(find object_analytics_launch)/launch/includes/segmenter.launch">
+         <arg name="manager"                   value="$(arg manager)" />
+         <arg name="input"                     value="/ns/pc2" />
+     </include>
+
+     <node name="TestPC2Publisher" pkg="object_analytics_nodelet" type="pc2_publisher" />
+
+     <test name="publishtest"
+               test-name="publishtest"
+               pkg="rostest"
+               type="publishtest">
+        <rosparam>
+  topics:
+    - name: /ns/segmentation
+      timeout: 20
+      negative: False
+        </rosparam>
+    </test>
+  </group>
+</launch>
+
+

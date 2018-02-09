@@ -159,7 +159,7 @@ if(CATKIN_ENABLE_TESTING)
   find_package(PCL 1.7 REQUIRED COMPONENTS
     io
   )
-set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRARIES})
+  set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRARIES})
 
   get_filename_component(RESOURCE_DIR "tests/resource" ABSOLUTE)
   configure_file(tests/unittest_util.h.in tests/unittest_util.h)
@@ -188,6 +188,20 @@ set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRAR
   catkin_add_gtest(unittest_segmenter tests/unittest_segmenter.cpp tests/unittest_util.cpp
     WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}/tests)
   target_link_libraries(unittest_segmenter ${UNITEST_LIBRARIES})
+
+  # node test
+  find_package(rostest REQUIRED)
+  add_executable(pc2_publisher tests/pc2_publisher.cpp tests/unittest_util.cpp)
+  add_dependencies(pc2_publisher ${catkin_EXPORTED_TARGETS})
+  target_link_libraries(pc2_publisher ${UNITEST_LIBRARIES})
+
+  add_executable(mock_segmenter_detector tests/mock_segmenter_detector.cpp tests/unittest_util.cpp)
+  add_dependencies(mock_segmenter_detector ${catkin_EXPORTED_TARGETS})
+  target_link_libraries(mock_segmenter_detector ${UNITEST_LIBRARIES})
+
+  add_rostest(tests/nodetest_splitter.test)
+  add_rostest(tests/nodetest_segmenter.test)
+  add_rostest(tests/nodetest_merger.test)
 
   # lib module test
   option(MTEST_TRACKING_ENABLE_VIEW "enable visual outputs" OFF)

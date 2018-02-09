@@ -52,6 +52,8 @@ limitations under the License.
   <run_depend>libpcl-all-dev</run_depend>
   <run_depend>libpcl-all</run_depend>
 
+  <test_depend>rostest</test_depend>
+
   <export>
     <nodelet plugin="${prefix}/object_analytics_nodelet_plugins.xml" />
   </export>

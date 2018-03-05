@@ -63,7 +63,6 @@ void TrackingNodelet::obj_cb(const object_msgs::ObjectsInBoxesConstPtr& objs)
   {
     return;
   }
-
   std::vector<sensor_msgs::ImageConstPtr>::iterator rgb = rgbs_.begin();
   while (rgb != rgbs_.end())
   {
@@ -82,6 +81,7 @@ void TrackingNodelet::obj_cb(const object_msgs::ObjectsInBoxesConstPtr& objs)
     if ((*rgb)->header.stamp == last_detection_)
     {
       ROS_DEBUG("rectify!");
+      tm_->track(mat_cv);
       tm_->detect(mat_cv, last_obj_);
     }
     else

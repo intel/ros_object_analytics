@@ -30,8 +30,8 @@ namespace tracker
 {
 // TrackingManager class implementation
 
-const float TrackingManager::kMatchThreshold = 0.2;
-const float TrackingManager::kProbabilityThreshold = 0.5;
+const float TrackingManager::kMatchThreshold = 0;
+const float TrackingManager::kProbabilityThreshold = 0.4;
 int32_t TrackingManager::tracking_cnt = 0;
 const int32_t TrackingManager::kNumOfThread = 4;
 
@@ -54,7 +54,7 @@ void TrackingManager::track(const cv::Mat& mat)
   {
     if (!trackings_[i]->updateTracker(mat))
     {
-      ROS_DEBUG("tracking[%d] false !!!", trackings_[i]->getTrackingId());
+      ROS_INFO("tracking[%d] disappeared !!!", trackings_[i]->getTrackingId());
     }
   }
 }

@@ -141,9 +141,11 @@ double ObjectUtils::getMatch(const cv::Rect2d& r1, const cv::Rect2d& r2)
   double overlap = a0 / (a1 + a2 - a0);
   /* calculate the deviation between centers #1 and #2*/
   double deviate = sqrt(powf((c1.x - c2.x), 2) + powf((c1.y - c2.y), 2));
+  /* calculate the length of diagonal for the rectangle in average size*/
+  double len_diag = sqrt(powf(((ir1.width + ir2.width) >> 1), 2) + powf(((ir1.height + ir2.height) >> 1), 2));
 
   /* calculate the match rate. The more overlap, the more matching. Contrary, the more deviation, the less matching*/
-  return overlap * 100 / deviate;
+  return overlap * len_diag / deviate;
 }
 
 void ObjectUtils::copyPointCloud(const PointCloudT::ConstPtr& original, const std::vector<int>& indices,

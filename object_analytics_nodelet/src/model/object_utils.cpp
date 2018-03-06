@@ -114,9 +114,9 @@ void ObjectUtils::getProjectedROI(const pcl::PointCloud<PointXYZPixel>::ConstPtr
   auto cmp_x = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.pixel_x < r.pixel_x; };
   auto minmax_x = std::minmax_element(point_cloud->begin(), point_cloud->end(), cmp_x);
   roi.x_offset = minmax_x.first->pixel_x;
-  ROS_ASSERT(roi.x_offset >= 0);
-  ROS_ASSERT(max_x > roi.x_offset);
   auto max_x = minmax_x.second->pixel_x;
+  ROS_ASSERT(roi.x_offset >= 0);
+  ROS_ASSERT(max_x >= roi.x_offset);
   roi.width = max_x - roi.x_offset;
 
   auto cmp_y = [](PointXYZPixel const& l, PointXYZPixel const& r) { return l.pixel_y < r.pixel_y; };
@@ -124,7 +124,7 @@ void ObjectUtils::getProjectedROI(const pcl::PointCloud<PointXYZPixel>::ConstPtr
   roi.y_offset = minmax_y.first->pixel_y;
   auto max_y = minmax_y.second->pixel_y;
   ROS_ASSERT(roi.y_offset >= 0);
-  ROS_ASSERT(max_y > roi.y_offset);
+  ROS_ASSERT(max_y >= roi.y_offset);
   roi.height = max_y - roi.y_offset;
 }
 

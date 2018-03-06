@@ -108,6 +108,7 @@ public:
 private:
   static const float kMatchThreshold;       /**< The minimum matching level of roi*/
   static const float kProbabilityThreshold; /**< The minimum confidence level of detected object*/
+  static const int kSamplerInitInRadius;    /**< Input radius parameter for tracker's sampling (from OpenCV)*/
   static int32_t tracking_cnt;              /**< Count of trackings, as a unique ID of a same object across frames*/
   static const int32_t kNumOfThread;        /**< Number of threads used for paralleling computation*/
   std::vector<std::shared_ptr<Tracking>> trackings_; /**< List of trackings, each for one detected object*/

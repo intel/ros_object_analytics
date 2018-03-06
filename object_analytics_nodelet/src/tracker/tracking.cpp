@@ -58,7 +58,8 @@ void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
 bool Tracking::updateTracker(const cv::Mat& mat)
 {
   bool ret = tracker_->update(mat, rect_);
-  ROS_DEBUG("update tr[%d][%d %d %d %d]", tracking_id_, (int)rect_.x, (int)rect_.y, (int)rect_.width, (int)rect_.height);
+  ROS_DEBUG("update tr[%d][%d %d %d %d]",
+    tracking_id_, (int)rect_.x, (int)rect_.y, (int)rect_.width, (int)rect_.height);
   ageing_++;
   return ret;
 }

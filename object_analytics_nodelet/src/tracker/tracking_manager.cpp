@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <omp.h>
@@ -32,6 +33,7 @@ namespace tracker
 
 const float TrackingManager::kMatchThreshold = 0;
 const float TrackingManager::kProbabilityThreshold = 0.4;
+const int TrackingManager::kSamplerInitInRadius = 3;
 int32_t TrackingManager::tracking_cnt = 0;
 const int32_t TrackingManager::kNumOfThread = 4;
 
@@ -54,7 +56,7 @@ void TrackingManager::track(const cv::Mat& mat)
   {
     if (!trackings_[i]->updateTracker(mat))
     {
-      ROS_INFO("tracking[%d] disappeared !!!", trackings_[i]->getTrackingId());
+      ROS_DEBUG("tracking[%d] disappeared !!!", trackings_[i]->getTrackingId());
     }
   }
 }
@@ -79,19 +81,22 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
     }
     std::string n = dobj.object_name;
     sensor_msgs::RegionOfInterest droi = objs->objects_vector[i].roi;
-    /* some trackers do not accept an ROI beyond the size of a Mat*/
+    /* some trackers do not accept an ROI beyond the size of Mat*/
     if (!validateROI(mat, droi))
     {
-      ROS_WARN("unexptected ROI [%d %d %d %d] against mat size [%d %d]", droi.x_offset, droi.y_offset, droi.width,
+      ROS_DEBUG("unexptected ROI [%d %d %d %d] against mat size [%d %d]", droi.x_offset, droi.y_offset, droi.width,
                droi.height, mat.cols, mat.rows);
-      droi.x_offset = droi.x_offset < 0 ? 0 : droi.x_offset;
-      droi.x_offset = droi.x_offset >= static_cast<uint32_t>(mat.cols) ? (mat.cols - 1) : droi.x_offset;
-      droi.y_offset = droi.y_offset < 0 ? 0 : droi.y_offset;
-      droi.y_offset = droi.y_offset >= static_cast<uint32_t>(mat.rows) ? (mat.rows - 1) : droi.y_offset;
-      droi.width =
-          droi.x_offset + droi.width > static_cast<uint32_t>(mat.cols) ? (mat.cols - droi.x_offset) : droi.width;
-      droi.height =
-          droi.y_offset + droi.height > static_cast<uint32_t>(mat.rows) ? (mat.rows - droi.y_offset) : droi.height;
+      uint32_t cols = static_cast<uint32_t>(mat.cols);
+      uint32_t rows = static_cast<uint32_t>(mat.rows);
+      /* adjust ROI and keep tracking*/
+      droi.x_offset = std::min(droi.x_offset, cols - 2);
+      droi.y_offset = std::min(droi.y_offset, rows - 2);
+      droi.width = std::max(droi.width, 1u);
+      droi.width = std::min(droi.width, cols - kSamplerInitInRadius - 2);
+      droi.width = std::min(droi.width, cols - droi.x_offset);
+      droi.height = std::max(droi.height, 1u);
+      droi.height = std::min(droi.height, rows - kSamplerInitInRadius - 2);
+      droi.height = std::min(droi.height, rows - droi.y_offset);
     }
     cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
     ROS_DEBUG("detected %s [%d %d %d %d] %.0f%%", n.c_str(), droi.x_offset, droi.y_offset, droi.width, droi.height,
@@ -208,14 +213,19 @@ std::shared_ptr<Tracking> TrackingManager::getTracking(const std::string& obj_na
 
 bool TrackingManager::validateROI(const cv::Mat& mat, const sensor_msgs::RegionOfInterest& droi)
 {
-  ROS_ASSERT(droi.x_offset >= 0 && droi.x_offset < static_cast<uint32_t>(mat.cols));
-  ROS_ASSERT(droi.x_offset + droi.width <= static_cast<uint32_t>(mat.cols));
-  ROS_ASSERT(droi.y_offset >= 0 && droi.y_offset < static_cast<uint32_t>(mat.rows));
-  ROS_ASSERT(droi.y_offset + droi.height <= static_cast<uint32_t>(mat.rows));
-  return (droi.x_offset >= 0 && droi.x_offset < static_cast<uint32_t>(mat.cols) && droi.y_offset >= 0 &&
-          droi.y_offset < static_cast<uint32_t>(mat.rows) &&
-          (droi.x_offset + droi.width) <= static_cast<uint32_t>(mat.cols) &&
-          (droi.y_offset + droi.height) <= static_cast<uint32_t>(mat.rows));
+  uint32_t cols = static_cast<uint32_t>(mat.cols);
+  uint32_t rows = static_cast<uint32_t>(mat.rows);
+  ROS_ASSERT(droi.x_offset < cols - 1);
+  ROS_ASSERT(droi.width > 0 && droi.width < cols - kSamplerInitInRadius - 1);
+  ROS_ASSERT(droi.x_offset + droi.width <= cols);
+  ROS_ASSERT(droi.y_offset < rows - 1);
+  ROS_ASSERT(droi.height > 0 && droi.height < rows - kSamplerInitInRadius - 1);
+  ROS_ASSERT(droi.y_offset + droi.height <= rows);
+  return ((droi.x_offset < cols - 1) && (droi.y_offset < rows - 1) &&
+          (droi.width > 0) && (droi.height > 0) &&
+          /* opencv tracker expecting this*/
+          (droi.width < cols - 1) && (droi.height < rows - 1) &&
+          (droi.x_offset + droi.width) <= cols && (droi.y_offset + droi.height <= rows));
 }
 
 }  // namespace tracker

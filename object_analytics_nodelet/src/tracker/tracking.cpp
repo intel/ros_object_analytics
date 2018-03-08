@@ -15,6 +15,7 @@
  */
 
 #include <string>
+#include <ros/ros.h>
 #include <ros/assert.h>
 #include "object_analytics_nodelet/tracker/tracking.h"
 
@@ -22,8 +23,6 @@ namespace object_analytics_nodelet
 {
 namespace tracker
 {
-const int32_t Tracking::kAgeingThreshold = 16;
-
 Tracking::Tracking(int32_t tracking_id, const std::string& name, const cv::Rect2d& rect)
   : tracker_(cv::Ptr<cv::Tracker>()), rect_(rect), obj_name_(name), tracking_id_(tracking_id), detected_(false)
 {
@@ -50,12 +49,15 @@ void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
   tracker_ = cv::TrackerMIL::create();
 #endif
   tracker_->init(mat, rect);
+  ROS_DEBUG("init tr[%d][%d %d %d %d]", tracking_id_, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
   rect_ = rect;
 }
 
 bool Tracking::updateTracker(const cv::Mat& mat)
 {
   bool ret = tracker_->update(mat, rect_);
+  ROS_DEBUG("update tr[%d][%d %d %d %d]",
+    tracking_id_, (int)rect_.x, (int)rect_.y, (int)rect_.width, (int)rect_.height);
   ageing_++;
   return ret;
 }
@@ -75,9 +77,9 @@ int32_t Tracking::getTrackingId()
   return tracking_id_;
 }
 
-bool Tracking::isActive()
+int32_t Tracking::getAging()
 {
-  return ageing_ < kAgeingThreshold;
+  return ageing_;
 }
 
 bool Tracking::isDetected()

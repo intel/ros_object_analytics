@@ -37,7 +37,7 @@ void TrackingNodelet::onInit()
   sub_rgb_ = nh.subscribe(Const::kTopicRgb, 6, &TrackingNodelet::rgb_cb, this);
   sub_obj_ = nh.subscribe(Const::kTopicDetection, 6, &TrackingNodelet::obj_cb, this);
   pub_tracking_ = nh.advertise<object_analytics_msgs::TrackedObjects>(Const::kTopicTracking, 10);
-  tm_ = std::make_shared<TrackingManager>();
+  tm_ = std::make_shared<TrackingManager>(getPrivateNodeHandle());
   last_detection_ = ros::Time();
   this_detection_ = ros::Time();
   last_obj_ = nullptr;
@@ -63,7 +63,6 @@ void TrackingNodelet::obj_cb(const object_msgs::ObjectsInBoxesConstPtr& objs)
   {
     return;
   }
-
   std::vector<sensor_msgs::ImageConstPtr>::iterator rgb = rgbs_.begin();
   while (rgb != rgbs_.end())
   {
@@ -82,6 +81,7 @@ void TrackingNodelet::obj_cb(const object_msgs::ObjectsInBoxesConstPtr& objs)
     if ((*rgb)->header.stamp == last_detection_)
     {
       ROS_DEBUG("rectify!");
+      tm_->track(mat_cv);
       tm_->detect(mat_cv, last_obj_);
     }
     else

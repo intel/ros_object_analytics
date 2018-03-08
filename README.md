@@ -70,6 +70,11 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
   Frequently used options
   * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points" (topic compliant with [ROS OpenNI launch](http://wiki.ros.org/openni_launch))
+  * **aging_th** Specifiy tracking aging threshold, number of frames since last detection to deactivate the tracking. Default is 30.
+  * **probability_th** Specify the probability threshold for tracking object. Default is "0.4".
+  ```bash
+  roslaunch object_analytics_launch analytics_movidius_ncs.launch aging_th:=30 probability_th:="0.3"
+  ```
 
 ## published topics
   object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))
@@ -136,23 +141,6 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   Steps to enable visualization on RViz are as following
   ```bash
   roslaunch object_analytics_visualization rviz.launch
-  ```
-
-## rostest
-  The roslaunch files with ".test" surfix will launch the test node and all dependents, including camera, detection nodelet, and object_analytics.
-  * run tracking test without visual outputs
-  ```bash
-  catkin_make
-  rostest object_analytics_nodelet mtest_tracking.test
-  ```
-  * run tracking test with visual outputs
-  ```bash
-  catkin_make clean --pkg object_analytics_nodelet
-  catkin_make -DMTEST_TRACKING_ENABLE_VIEW=ON --pkg object_analytics_nodelet
-  # to launch the test with "camera" option, to specify RGB-D camera [realsense(default)|astra]
-  rostest object_analytics_nodelet mtest_tracking.test camera:=realsense
-  # to launch the test with "detect_pkg" option, to specify detection package [movidius_ncs(default)|opencl_caffe]
-  rostest object_analytics_nodelet mtest_tracking.test detect_pkg:=movidius_ncs
   ```
 
 ###### *Any security issue should be reported using process at https://01.org/security*

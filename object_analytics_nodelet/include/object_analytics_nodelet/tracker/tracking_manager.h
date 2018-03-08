@@ -47,8 +47,14 @@ namespace tracker
  *
  * TrackingManager also maintains a @ref kProbabilityThreshold, only when detected with a confidence level not less
  * than this threshold will the object be added to the tracking list. This is necessary to mask any unexpected or
- * unstable  detection results.
+ * unstable detection results.
  *
+ * For a tracked object, TrackingManager keep updating tracking roi in the successive tracking frames, even this object
+ * might not be detected in those frames. The tracking is considered "active", till its @ref aging_ reaches a threshold.
+ * TrackingManager maintains a @kAgeingThreshold specify the maximum age of an active tracking. Trackings below this
+ * age are actively updated when tracking frame arrives. Trackings above this age are consider inactive, and to be
+ * removed from the list.
+
  * Paralleling computation is enabled in TrackingManager, supported by openmp from compilers. @ref kNumOfThread
  * specifies the number of threads used for paralleling computation. Usually this should be less than the maximum
  * number of threads supported by the platform.
@@ -58,8 +64,10 @@ class TrackingManager
 public:
   /**
    * @brief Constructor, a TrackingManager shall be created for one stream.
+   *
+   * @param[in] pnh Private node handler
    */
-  TrackingManager();
+  explicit TrackingManager(ros::NodeHandle &pnh);
 
   /**
    * @brief Default destructor.
@@ -106,11 +114,14 @@ public:
   int32_t getTrackedObjs(const object_analytics_msgs::TrackedObjectsPtr& objs);
 
 private:
+  static const int32_t kAgeingThreshold;    /**< The default aging threshold*/
   static const float kMatchThreshold;       /**< The minimum matching level of roi*/
-  static const float kProbabilityThreshold; /**< The minimum confidence level of detected object*/
-  static const int kSamplerInitInRadius;    /**< Input radius parameter for tracker's sampling (from OpenCV)*/
-  static int32_t tracking_cnt;              /**< Count of trackings, as a unique ID of a same object across frames*/
   static const int32_t kNumOfThread;        /**< Number of threads used for paralleling computation*/
+  static const float kProbabilityThreshold; /**< The default probability threshold*/
+  static const int32_t kSamplerInputRadius; /**< Input radius parameter for tracker's sampling (from OpenCV)*/
+  static int32_t tracking_cnt;              /**< Count of trackings, as a unique ID of a same object across frames*/
+  int32_t aging_th_;                        /**< The effective aging threshold*/
+  float probability_th_;                    /**< The effective probability threshold*/
   std::vector<std::shared_ptr<Tracking>> trackings_; /**< List of trackings, each for one detected object*/
 
   /**
@@ -126,9 +137,9 @@ private:
   std::shared_ptr<Tracking> addTracking(const std::string& obj_name, const cv::Rect2d& roi);
 
   /**
-   * @brief Clean up inactive tracking in the list.
-   *
-   * See @ref Tracking::isActive() for inactive trackings.
+   * @brief Clean up inactive tracking in the list. @ref kAgeingThreshold specify the maximum age of an active tracking.
+   * Trackings below this age are actively updated when tracking frame arrives. Trackings above this age are consider
+   * inactive, and to be removed from the list.
    */
   void cleanTrackings();
 

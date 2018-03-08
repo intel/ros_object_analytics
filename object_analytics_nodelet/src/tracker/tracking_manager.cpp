@@ -31,14 +31,17 @@ namespace tracker
 {
 // TrackingManager class implementation
 
+const int32_t TrackingManager::kAgeingThreshold = 30;
 const float TrackingManager::kMatchThreshold = 0;
+const int32_t TrackingManager::kNumOfThread = 3;
 const float TrackingManager::kProbabilityThreshold = 0.4;
-const int TrackingManager::kSamplerInitInRadius = 3;
+const int32_t TrackingManager::kSamplerInputRadius = 3;
 int32_t TrackingManager::tracking_cnt = 0;
-const int32_t TrackingManager::kNumOfThread = 4;
 
-TrackingManager::TrackingManager()
+TrackingManager::TrackingManager(ros::NodeHandle &pnh)
 {
+  pnh.param("aging_th", aging_th_, kAgeingThreshold);
+  pnh.param("probability_th", probability_th_, kProbabilityThreshold);
 }
 
 TrackingManager::~TrackingManager()
@@ -92,10 +95,10 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
       droi.x_offset = std::min(droi.x_offset, cols - 2);
       droi.y_offset = std::min(droi.y_offset, rows - 2);
       droi.width = std::max(droi.width, 1u);
-      droi.width = std::min(droi.width, cols - kSamplerInitInRadius - 2);
+      droi.width = std::min(droi.width, cols - kSamplerInputRadius - 2);
       droi.width = std::min(droi.width, cols - droi.x_offset);
       droi.height = std::max(droi.height, 1u);
-      droi.height = std::min(droi.height, rows - kSamplerInitInRadius - 2);
+      droi.height = std::min(droi.height, rows - kSamplerInputRadius - 2);
       droi.height = std::min(droi.height, rows - droi.y_offset);
     }
     cv::Rect2d r = cv::Rect2d(droi.x_offset, droi.y_offset, droi.width, droi.height);
@@ -161,7 +164,7 @@ void TrackingManager::cleanTrackings()
   std::vector<std::shared_ptr<Tracking>>::iterator t = trackings_.begin();
   while (t != trackings_.end())
   {
-    if (!(*t)->isActive())
+    if ((*t)->getAging() >= kAgeingThreshold)
     {
       ROS_DEBUG("removeTracking[%d] ---", (*t)->getTrackingId());
       t = trackings_.erase(t);
@@ -216,10 +219,10 @@ bool TrackingManager::validateROI(const cv::Mat& mat, const sensor_msgs::RegionO
   uint32_t cols = static_cast<uint32_t>(mat.cols);
   uint32_t rows = static_cast<uint32_t>(mat.rows);
   ROS_ASSERT(droi.x_offset < cols - 1);
-  ROS_ASSERT(droi.width > 0 && droi.width < cols - kSamplerInitInRadius - 1);
+  ROS_ASSERT(droi.width > 0 && droi.width < cols - kSamplerInputRadius - 1);
   ROS_ASSERT(droi.x_offset + droi.width <= cols);
   ROS_ASSERT(droi.y_offset < rows - 1);
-  ROS_ASSERT(droi.height > 0 && droi.height < rows - kSamplerInitInRadius - 1);
+  ROS_ASSERT(droi.height > 0 && droi.height < rows - kSamplerInputRadius - 1);
   ROS_ASSERT(droi.y_offset + droi.height <= rows);
   return ((droi.x_offset < cols - 1) && (droi.y_offset < rows - 1) &&
           (droi.width > 0) && (droi.height > 0) &&

@@ -17,6 +17,8 @@ limitations under the License.
   <arg name="input_rgb"                      default="rgb" />
   <arg name="input_2d"                       default="detection" />
   <arg name="output"                         default="tracking" />
+  <arg name="aging_th"                       default="30"/>
+  <arg name="probability_th"                 default="0.4"/>
 
   <node pkg="nodelet"
        type="nodelet"
@@ -26,5 +28,7 @@ limitations under the License.
       <remap from="rgb"                      to="$(arg input_rgb)" />
       <remap from="detection"                to="$(arg input_2d)" />
       <remap from="tracking"                 to="$(arg output)" />
+      <param name="aging_th" type="int" value="$(arg aging_th)"/>
+      <param name="probability_th" type="double" value="$(arg probability_th)"/>
   </node>
 </launch>

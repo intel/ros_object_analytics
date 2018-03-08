@@ -37,7 +37,7 @@ void TrackingNodelet::onInit()
   sub_rgb_ = nh.subscribe(Const::kTopicRgb, 6, &TrackingNodelet::rgb_cb, this);
   sub_obj_ = nh.subscribe(Const::kTopicDetection, 6, &TrackingNodelet::obj_cb, this);
   pub_tracking_ = nh.advertise<object_analytics_msgs::TrackedObjects>(Const::kTopicTracking, 10);
-  tm_ = std::make_shared<TrackingManager>();
+  tm_ = std::make_shared<TrackingManager>(getPrivateNodeHandle());
   last_detection_ = ros::Time();
   this_detection_ = ros::Time();
   last_obj_ = nullptr;

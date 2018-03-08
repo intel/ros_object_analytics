@@ -23,8 +23,6 @@ namespace object_analytics_nodelet
 {
 namespace tracker
 {
-const int32_t Tracking::kAgeingThreshold = 30;
-
 Tracking::Tracking(int32_t tracking_id, const std::string& name, const cv::Rect2d& rect)
   : tracker_(cv::Ptr<cv::Tracker>()), rect_(rect), obj_name_(name), tracking_id_(tracking_id), detected_(false)
 {
@@ -79,9 +77,9 @@ int32_t Tracking::getTrackingId()
   return tracking_id_;
 }
 
-bool Tracking::isActive()
+int32_t Tracking::getAging()
 {
-  return ageing_ < kAgeingThreshold;
+  return ageing_;
 }
 
 bool Tracking::isDetected()

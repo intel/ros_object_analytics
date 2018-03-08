@@ -33,12 +33,9 @@ namespace tracker
  * - rect, roi of the tracked object.
  *
  * Also a tracking has some internal attributs
- * - ageing, will be increased by one upon a tracking frame arrives, and will be reset to zero when a detection
- * frame arrives. @ref kAgeingThreshold specify the maximum age of an active tracking. Trackings below this age
- * are actively updated when tracking frame arrives. Trackings above this age are consider inactive, and to be removed
- * from the list.
- * - detected, will be set when a detection frame arrives. Tracking associated to a detected object will have its
- * detected flag set as true.
+ * - ageing, indicating how old since last detection frame. Reset to zero when object detected in the frame, and
+ * increase upon every tracking frame arrives. @ref kAgeingThreshold specify the maximum age of an active tracking.
+ * - detected flag, will be set when a detection frame arrives. True if the tracked object is detected in the frame.
  *
  * When a tracking is created, it is assigned a tracking ID, and associated with the name and roi of the detected
  * object. When a detection frame arrives, a tracking shall rectify its tracker, see @ref rectifyTracker, with the
@@ -99,11 +96,11 @@ public:
   int32_t getTrackingId();
 
   /**
-   * @brief Get the active status of a tracking, see @ref kAgeingThreshold.
+   * @brief Get the aging.
    *
-   * @return true if tracking is active, otherwise false.
+   * @return Aging of the tracking.
    */
-  bool isActive();
+  int32_t getAging();
 
   /**
    * @brief Get the detected status of a tracking.
@@ -123,7 +120,6 @@ public:
   void clearDetected();
 
 private:
-  static const int32_t kAgeingThreshold; /**< The maximum ageing of an active tracking.*/
   cv::Ptr<cv::Tracker> tracker_;         /**< Tracker associated to this tracking.*/
   cv::Rect2d rect_;                      /**< Roi of the tracked object.*/
   std::string obj_name_;                 /**< Name of the tracked object.*/

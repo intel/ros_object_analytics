@@ -45,9 +45,9 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
 ## extra running dependencies
   RGB-D camera
-  * [librealsense2 tag v2.8.1](https://github.com/IntelRealSense/librealsense/tree/v2.8.1) and [realsense_ros_camera tag 2.0.1](https://github.com/intel-ros/realsense/tree/2.0.1) if run with Intel RealSense D400
+  * [librealsense2 tag v2.9.1](https://github.com/IntelRealSense/librealsense/tree/v2.9.1) and [realsense_ros_camera tag 2.0.2](https://github.com/intel-ros/realsense/tree/2.0.2) if run with Intel RealSense D400
   ```
-  roslaunch realsense_ros_camera rs_camera.launch enable_pointcloud:=true enable_sync:=true
+  roslaunch realsense_ros_camera rs_rgbd.launch
   ```
   * [openni_launch](http://wiki.ros.org/openni_launch) or [freenect_launch](http://wiki.ros.org/freenect_launch) and their dependencies if run with Microsoft XBOX 360 Kinect
   ```bash
@@ -69,10 +69,7 @@ OA keeps integrating with various "state-of-the-art" algorithms.
    ```
 
   Frequently used options
-  * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points". For realsense it is "/camera/points".
-  ```bash
-  roslaunch object_analytics_launch analytics_movidius_ncs.launch input_points:=/camera/points
-  ```
+  * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points" (topic compliant with [ROS OpenNI launch](http://wiki.ros.org/openni_launch))
 
 ## published topics
   object_analytics/rgb ([sensor_msgs::Image](http://docs.ros.org/api/sensor_msgs/html/msg/Image.html))

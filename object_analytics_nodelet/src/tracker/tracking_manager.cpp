@@ -33,7 +33,7 @@ namespace tracker
 
 const int32_t TrackingManager::kAgeingThreshold = 30;
 const float TrackingManager::kMatchThreshold = 0;
-const int32_t TrackingManager::kNumOfThread = 3;
+const int32_t TrackingManager::kNumOfThread = 4;
 const float TrackingManager::kProbabilityThreshold = 0.4;
 const int32_t TrackingManager::kSamplerInputRadius = 3;
 int32_t TrackingManager::tracking_cnt = 0;

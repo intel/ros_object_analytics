@@ -16,21 +16,20 @@ limitations under the License.
 <launch>
   <arg name="namespace"                     default="object_analytics" />
   <arg name="manager"                       default="ObjectAnalyticsMgr" />
-  <arg name="splitter_name"                 default="splitter" />
-  <arg name="segmenter_name"                default="segmenter" />
-  <arg name="detecter_name"                 default="detecter" />
-  <arg name="merger_name"                   default="merger" />
-  <arg name="tracker_name"                  default="tracker" />
   <arg name="input_points"                  default="/camera/depth_registered/points"
-            doc="point cloud topic from sensor" />
+            doc="point cloud topic from rgbd sensor" />
   <arg name="input_rgb"                     default="rgb"
-            doc="rgb topic from sensor" />
+            doc="rgb topic from splitter" />
   <arg name="input_detection"               default="detection"
-            doc="detection topic from object detection nodelet" />
+            doc="detection result topic from object detection nodelet" />
   <arg name="output_localization"           default="localization"
             doc="localization result topic" />
   <arg name="output_tracking"               default="tracking"
             doc="tracking result topic" />
+  <arg name="aging_th"                      default="30"
+            doc="tracking aging threshold" />
+  <arg name="probability_th"                default="0.4"
+            doc="tracking object probability threshold" />
 
   <group ns="$(arg namespace)">
       <include file="$(find object_analytics_launch)/launch/includes/manager.launch">
@@ -38,36 +37,20 @@ limitations under the License.
           <arg name="num_worker_threads"        value="6" />
       </include>
 
-      <include file="$(find object_analytics_launch)/launch/includes/splitter.launch">
+      <include file="$(find object_analytics_launch)/launch/includes/nodelet.launch.xml">
           <arg name="manager"                   value="$(arg manager)" />
-          <arg name="name"                      value="$(arg splitter_name)" />
-          <arg name="input"                     value="$(arg input_points)" />
-          <arg name="output_2d"                 value="$(arg input_rgb)" />
-      </include>
-
-      <include file="$(find object_analytics_launch)/launch/includes/segmenter.launch">
-          <arg name="manager"                   value="$(arg manager)" />
-          <arg name="name"                      value="$(arg segmenter_name)" />
-      </include>
-
-      <include file="$(find object_analytics_launch)/launch/includes/merger.launch">
-          <arg name="manager"                   value="$(arg manager)" />
-          <arg name="name"                      value="$(arg merger_name)" />
-          <arg name="input_2d"                  value="$(arg input_detection)" />
-          <arg name="output"                    value="$(arg output_localization)" />
-      </include>
-
-      <include file="$(find object_analytics_launch)/launch/includes/tracker.launch">
-          <arg name="manager"                   value="$(arg manager)" />
-          <arg name="name"                      value="$(arg tracker_name)" />
+          <arg name="input_points"              value="$(arg input_points)" />
           <arg name="input_rgb"                 value="$(arg input_rgb)" />
-          <arg name="input_2d"                  value="$(arg input_detection)" />
-          <arg name="output"                    value="$(arg output_tracking)" />
+          <arg name="input_detection"           value="$(arg input_detection)" />
+          <arg name="output_localization"       value="$(arg output_localization)" />
+          <arg name="output_tracking"           value="$(arg output_tracking)" />
+          <arg name="aging_th"                  value="$(arg aging_th)" />
+          <arg name="probability_th"            value="$(arg probability_th)" />
       </include>
 
       <include file="$(find opencl_caffe_launch)/launch/includes/nodelet.launch">
           <arg name="manager"                   value="$(arg manager)" />
-          <arg name="name"                      value="$(arg detecter_name)" />
+          <arg name="name"                      value="detecter" />
           <arg name="input_topic"               value="$(arg input_rgb)" />
           <arg name="output_topic"              value="$(arg input_detection)" />
       </include>

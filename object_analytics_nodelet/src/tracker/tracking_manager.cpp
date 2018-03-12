@@ -227,7 +227,7 @@ bool TrackingManager::validateROI(const cv::Mat& mat, const sensor_msgs::RegionO
   return ((droi.x_offset < cols - 1) && (droi.y_offset < rows - 1) &&
           (droi.width > 0) && (droi.height > 0) &&
           /* opencv tracker expecting this*/
-          (droi.width < cols - 1) && (droi.height < rows - 1) &&
+          (droi.width < cols - kSamplerInputRadius - 1) && (droi.height < rows - kSamplerInputRadius - 1) &&
           (droi.x_offset + droi.width) <= cols && (droi.y_offset + droi.height <= rows));
 }
 

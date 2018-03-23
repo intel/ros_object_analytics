@@ -70,8 +70,8 @@ OA keeps integrating with various "state-of-the-art" algorithms.
 
   Frequently used options
   * **input_points** Specify arg "input_points" for the name of the topic publishing the [sensor_msgs::PointCloud2](http://docs.ros.org/api/sensor_msgs/html/msg/PointCloud2.html) messages by RGB-D camera. Default is "/camera/depth_registered/points" (topic compliant with [ROS OpenNI launch](http://wiki.ros.org/openni_launch))
-  * **aging_th** Specifiy tracking aging threshold, number of frames since last detection to deactivate the tracking. Default is 30.
-  * **probability_th** Specify the probability threshold for tracking object. Default is "0.4".
+  * **aging_th** Specifiy tracking aging threshold, number of frames since last detection to deactivate the tracking. Default is 16.
+  * **probability_th** Specify the probability threshold for tracking object. Default is "0.5".
   ```bash
   roslaunch object_analytics_launch analytics_movidius_ncs.launch aging_th:=30 probability_th:="0.3"
   ```

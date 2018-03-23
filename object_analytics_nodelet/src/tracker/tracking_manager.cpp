@@ -31,10 +31,10 @@ namespace tracker
 {
 // TrackingManager class implementation
 
-const int32_t TrackingManager::kAgeingThreshold = 30;
+const int32_t TrackingManager::kAgeingThreshold = 16;
 const float TrackingManager::kMatchThreshold = 0;
 const int32_t TrackingManager::kNumOfThread = 4;
-const float TrackingManager::kProbabilityThreshold = 0.4;
+const float TrackingManager::kProbabilityThreshold = 0.5;
 const int32_t TrackingManager::kSamplerInputRadius = 3;
 int32_t TrackingManager::tracking_cnt = 0;
 

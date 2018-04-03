@@ -150,6 +150,7 @@ endif()
 if(CATKIN_ENABLE_TESTING)
   # static code check
   find_package(roslint REQUIRED)
+  find_package(pcl_ros REQUIRED)
   roslint_cpp()
   roslint_python(cfg/SegmentationAlgorithms.cfg)
   roslint_python(cfg/OrganizedMultiPlaneSegmentation.cfg)
@@ -159,7 +160,7 @@ if(CATKIN_ENABLE_TESTING)
   find_package(PCL 1.7 REQUIRED COMPONENTS
     io
   )
-set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRARIES})
+  set(UNITEST_LIBRARIES ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread ${PCL_IO_LIBRARIES})
 
   get_filename_component(RESOURCE_DIR "tests/resource" ABSOLUTE)
   configure_file(tests/unittest_util.h.in tests/unittest_util.h)

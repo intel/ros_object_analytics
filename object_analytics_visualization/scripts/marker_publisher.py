@@ -181,7 +181,7 @@ class SynchronizedSubscriber(object):
         """
         self._pub = rospy.Publisher(self.TOPIC, MarkerArray, queue_size=10)
         loc_sub = message_filters.Subscriber('/object_analytics/localization', ObjectsInBoxes3D)
-        det_sub = message_filters.Subscriber('/object_analytics/detection', ObjectsInBoxes)
+        det_sub = message_filters.Subscriber('/movidius_ncs_stream/detected_objects', ObjectsInBoxes)
         tra_sub = message_filters.Subscriber('/object_analytics/tracking', TrackedObjects)
 
         ts = message_filters.TimeSynchronizer([det_sub, loc_sub, tra_sub], 10)

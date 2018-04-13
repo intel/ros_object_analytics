@@ -157,13 +157,13 @@ class SynchronizedSubscriber(object):
         self._bridge = CvBridge()
         self._pub = rospy.Publisher(self.PUB_TOPIC, Image, queue_size=10)
         image_sub = message_filters.Subscriber('/object_analytics/rgb', Image)
-        detection_sub = message_filters.Subscriber('/movidius_ncs_stream/detected_objects', ObjectsInBoxes)
+        detection_sub = message_filters.Subscriber('/object_analytics/detection', ObjectsInBoxes)
         tracking_sub = message_filters.Subscriber('/object_analytics/tracking', TrackedObjects)
 
         ts = message_filters.TimeSynchronizer([image_sub, detection_sub, tracking_sub], 100)
         ts.registerCallback(self._callback)
 
-        self._measures = [Measure('Detection', '/movidius_ncs_stream/detected_objects', ObjectsInBoxes),
+        self._measures = [Measure('Detection', '/object_analytics/detection', ObjectsInBoxes),
                           Measure('Localization', '/object_analytics/localization', ObjectsInBoxes3D),
                           Measure('Tracking', '/object_analytics/tracking', TrackedObjects)]
 

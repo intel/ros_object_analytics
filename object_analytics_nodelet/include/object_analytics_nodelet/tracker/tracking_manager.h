@@ -131,10 +131,10 @@ private:
    * of the same object across frames. Then the tracking_cnt automatically increases by one.
    *
    * @param[in] obj_name Name of the object (e.g. people, dog, etc.).
-   * @param[in] roi Bounding box of the object.
+   * @param[in] rect Roi of the tracked object.
    * @return Pointer to the tracking added.
    */
-  std::shared_ptr<Tracking> addTracking(const std::string& obj_name, const cv::Rect2d& roi);
+  std::shared_ptr<Tracking> addTracking(const std::string& obj_name, const cv::Rect2d& rect);
 
   /**
    * @brief Clean up inactive tracking in the list. @ref kAgeingThreshold specify the maximum age of an active tracking.

@@ -62,9 +62,10 @@ public:
    * @brief Rectify tracker with the roi of the detected object.
    *
    * @param[in] mat The detection frame.
-   * @param[in] rect Roi of the detected object.
+   * @param[in] rect Roi of the tracked object. Could be adjusted from the droi
+   * @param[in] droi Roi of the detected object.
    */
-  void rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect);
+  void rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect, const cv::Rect2d& droi);
 
   /**
    * @brief Update tracker with the tracking frame.
@@ -87,6 +88,13 @@ public:
    * @return Name of the tracked object.
    */
   std::string getObjName();
+
+  /**
+   * @brief Get the roi of the detected object.
+   *
+   * @return Roi of the detected object.
+   */
+  cv::Rect2d getObjRoi();
 
   /**
    * @brief Get the tracking id.
@@ -123,6 +131,7 @@ private:
   cv::Ptr<cv::Tracker> tracker_;         /**< Tracker associated to this tracking.*/
   cv::Rect2d rect_;                      /**< Roi of the tracked object.*/
   std::string obj_name_;                 /**< Name of the tracked object.*/
+  cv::Rect2d obj_roi_;                   /**< Roi of the detected object. */
   int32_t tracking_id_;                  /**< ID of this tracking.*/
   int32_t ageing_;                       /**< Age of this tracking.*/
   bool detected_;                        /**< Detected status of this tracking.*/

@@ -37,7 +37,7 @@ Tracking::~Tracking()
   }
 }
 
-void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
+void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect, const cv::Rect2d& droi)
 {
   if (tracker_.get())
   {
@@ -51,6 +51,7 @@ void Tracking::rectifyTracker(const cv::Mat& mat, const cv::Rect2d& rect)
   tracker_->init(mat, rect);
   ROS_DEBUG("init tr[%d][%d %d %d %d]", tracking_id_, (int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
   rect_ = rect;
+  obj_roi_ = droi;
 }
 
 bool Tracking::updateTracker(const cv::Mat& mat)
@@ -70,6 +71,11 @@ cv::Rect2d Tracking::getRect()
 std::string Tracking::getObjName()
 {
   return obj_name_;
+}
+
+cv::Rect2d Tracking::getObjRoi()
+{
+  return obj_roi_;
 }
 
 int32_t Tracking::getTrackingId()

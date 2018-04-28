@@ -18,7 +18,7 @@ limitations under the License.
   <arg name="input_2d"                       default="detection" />
   <arg name="output"                         default="tracking" />
   <arg name="aging_th"                       default="30"/>
-  <arg name="probability_th"                 default="0.4"/>
+  <arg name="probability_th"                 default="0.5"/>
 
   <node pkg="nodelet"
        type="nodelet"

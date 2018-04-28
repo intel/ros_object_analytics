@@ -31,7 +31,7 @@ namespace tracker
 {
 // TrackingManager class implementation
 
-const int32_t TrackingManager::kAgeingThreshold = 16;
+const int32_t TrackingManager::kAgeingThreshold = 30;
 const float TrackingManager::kMatchThreshold = 0;
 const int32_t TrackingManager::kNumOfThread = 4;
 const float TrackingManager::kProbabilityThreshold = 0.5;
@@ -78,7 +78,7 @@ void TrackingManager::detect(const cv::Mat& mat, const object_msgs::ObjectsInBox
   for (i = 0; i < objs->objects_vector.size(); i++)
   {
     object_msgs::Object dobj = objs->objects_vector[i].object;
-    if (dobj.probability < kProbabilityThreshold)
+    if (dobj.probability < probability_th_)
     {
       continue;
     }
@@ -164,7 +164,7 @@ void TrackingManager::cleanTrackings()
   std::vector<std::shared_ptr<Tracking>>::iterator t = trackings_.begin();
   while (t != trackings_.end())
   {
-    if ((*t)->getAging() >= kAgeingThreshold)
+    if ((*t)->getAging() >= aging_th_)
     {
       ROS_DEBUG("removeTracking[%d] ---", (*t)->getTrackingId());
       t = trackings_.erase(t);

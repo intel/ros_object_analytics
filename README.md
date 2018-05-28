@@ -141,5 +141,5 @@ OA keeps integrating with various "state-of-the-art" algorithms.
   ```bash
   roslaunch object_analytics_visualization rviz.launch
   ```
-
+###### *ROS 2 Object Analytics: https://github.com/intel/ros2_object_analytics*
 ###### *Any security issue should be reported using process at https://01.org/security*

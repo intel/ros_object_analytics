@@ -31,7 +31,8 @@ limitations under the License.
   <build_depend>rospy</build_depend>
   <build_depend>visualization_msgs</build_depend>
   <build_depend>cv_bridge</build_depend>
-  <build_depend>opencv2</build_depend>
+  <build_depend>libopencv-contrib-dev</build_depend>
+  <build_depend>libopencv-dev</build_depend>
   <build_depend>roslaunch</build_depend>
 
   <run_depend>object_analytics_msgs</run_depend>
@@ -39,7 +40,8 @@ limitations under the License.
   <run_depend>rospy</run_depend>
   <run_depend>visualization_msgs</run_depend>
   <run_depend>cv_bridge</run_depend>
-  <run_depend>opencv2</run_depend>
+  <run_depend>libopencv-contrib-dev</run_depend>
+  <run_depend>libopencv-dev</run_depend>
   <run_depend>roslaunch</run_depend>
   <run_depend>rviz</run_depend>
 </package>

@@ -30,7 +30,7 @@ find_package(
 
 catkin_package(
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS object_analytics_msgs object_msgs visualization_msgs rospy cv_bridge opencv2
+  CATKIN_DEPENDS object_analytics_msgs object_msgs visualization_msgs rospy cv_bridge libopencv-contrib-dev libopencv-dev
 )
 
 install(PROGRAMS
